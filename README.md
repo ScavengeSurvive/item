@@ -8,6 +8,8 @@ Item aims to be an extremely flexible script offering a callback for almost ever
 
 When picked up, items will appear on the character model bone specified in the item definition. This combines the visible aspect of weapons and items that are already in the game with the scriptable versatility of server created and scriptable entities.
 
+Documentation is in the source code.
+
 ## Installation
 
 Simply add to your `pawn.json`/`pawn.yaml`:
