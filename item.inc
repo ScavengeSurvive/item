@@ -762,9 +762,6 @@ static
 	Timer:itm_LongPickupTimer[MAX_PLAYERS];
 
 
-static ITEM_DEBUG = -1;
-
-
 /*==============================================================================
 
 	Zeroing
