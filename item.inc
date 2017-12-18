@@ -13,7 +13,7 @@
 #include <mathutil>
 #include <tick-difference>
 #include <action-text>
-#include <mathutil>
+#include <personal-space>
 
 #include <YSI\y_hooks>
 
@@ -97,7 +97,7 @@ Destroys an item.
 Boolean to indicate success or failure.
 */
 
-forward ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, longpickup = false, Float:buttonz = FLOOR_OFFSET, maxhitpoints = 5);
+forward ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = FLOOR_OFFSET, maxhitpoints = 5);
 /*
 # Description
 Defines a new item type with the specified name and model. Item types are the
@@ -810,7 +810,7 @@ hook OnPlayerDisconnect(playerid, reason) {
 stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, geid[] = "", hitpoints = -1) {
 	new itemid = Iter_Free(itm_Index);
 
-	if(itemid == -1) {
+	if(itemid == INVALID_ITERATOR_SLOT) {
 		err("ITM_MAX limit reached");
 		return INVALID_ITEM_ID;
 	}
@@ -898,11 +898,11 @@ stock DestroyItem(itemid, &indexid = -1, &worldindexid = -1) {
 	return 0;
 }
 
-stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, longpickup = false, Float:buttonz = FLOOR_OFFSET, maxhitpoints = 5) {
+stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = FLOOR_OFFSET, maxhitpoints = 5) {
 	new ItemType:id = ItemType:itm_TypeTotal;
 
 	if(id == ITM_MAX_TYPES) {
-		err("ITM_MAX_TYPES limit reached");
+		fatal("ITM_MAX_TYPES limit reached");
 		return INVALID_ITEM_TYPE;
 	}
 
@@ -1864,27 +1864,26 @@ _item_handleDropKeyDown(playerid) {
 		return 3;
 	}
 
-	new targetid = INVALID_PLAYER_ID;
-	// TODO: Import player-nearness library and use that instead
-	// new targetid = GetPlayerNextToPlayer(playerid);
-	// foreach(new i : Player) {
-	// 	if(i == playerid)
-	// 		continue;
+	new
+		targetid = INVALID_PLAYER_ID,
+		players[MAX_PLAYERS],
+		totalPlayers;
 
-	// 	if(itm_Holding[i] != INVALID_ITEM_ID)
-	// 		continue;
+	totalPlayers = GetPlayersNextToPlayer(playerid, players);
 
-	// 	if(itm_Interacting[i] != INVALID_ITEM_ID)
-	// 		continue;
+	for(new i; i < totalPlayers; ++i) {
+		if(itm_Holding[i] != INVALID_ITEM_ID)
+			continue;
 
-	// 	if(IsPlayerInAnyVehicle(i))
-	// 		continue;
+		if(itm_Interacting[i] != INVALID_ITEM_ID)
+			continue;
 
-	// 	if(IsPlayerInDynamicArea(playerid, gPlayerArea[i])) {
-	// 		if()
-	// 			return 1;
-	// 	}
-	// }
+		if(IsPlayerInAnyVehicle(i))
+			continue;
+
+		targetid = i;
+		break;
+	}
 
 	if(IsPlayerConnected(targetid)) {
 		PlayerGiveItem(playerid, targetid, 1);

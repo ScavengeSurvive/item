@@ -11,6 +11,8 @@
         "ScavengeSurvive/button",
         "ScavengeSurvive/mathutil",
         "ScavengeSurvive/tick-difference",
+        "ScavengeSurvive/action-text",
+        "ScavengeSurvive/personal-space",
         "ScavengeSurvive/test-boilerplate"
     ]
 }
