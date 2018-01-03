@@ -1,3 +1,9 @@
+// built-in include guard removal
+// just in case the user has a local dependency with the same file name
+#if defined _inc_item
+	#undef _inc_item
+#endif
+// custom include-guard to ensure we don't duplicate
 #if defined _item_included
 	#endinput
 #endif
@@ -218,7 +224,7 @@ Apart from the explicit item ID, parameters are the same as CreateItem.
 1 On success or 0 if the ID is invalid or is destroyed in OnItemCreate.
 */
 
-forward IsValidItem(itemid);
+forward bool:IsValidItem(itemid);
 /*
 # Description
 Returns whether the entered value is a valid item ID handle.
@@ -376,7 +382,7 @@ Retrieves the unique string of text assigned to an item.
 Boolean to indicate success or failure.
 */
 
-forward IsValidItemType(ItemType:itemtype);
+forward bool:IsValidItemType(ItemType:itemtype);
 /*
 # Description
 Checks whether a value is a valid item type.
@@ -482,7 +488,7 @@ Returns the item ID handle of the item a player is holding.
 INVALID_ITEM_ID if the player isn't holding an item.
 */
 
-forward IsItemInWorld(itemid);
+forward bool:IsItemInWorld(itemid);
 /*
 # Description
 Checks if an item is in the game world regardless of whether or not the item
@@ -1224,7 +1230,7 @@ stock CreateItem_ExplicitID(itemid, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0,
 	return 0;
 }
 
-stock IsValidItem(itemid) {
+stock bool:IsValidItem(itemid) {
 	if(!Iter_Contains(itm_Index, itemid)) {
 		return false;
 	}
@@ -1491,7 +1497,7 @@ stock GetItemGEID(itemid, string[]) {
 	return 0;
 }
 
-stock IsValidItemType(ItemType:itemtype) {
+stock bool:IsValidItemType(ItemType:itemtype) {
 	if(ItemType:0 <= itemtype < ItemType:itm_TypeTotal) {
 		return true;
 	}
@@ -1647,12 +1653,12 @@ stock GetPlayerItem(playerid) {
 	return itm_Holding[playerid];
 }
 
-stock IsItemInWorld(itemid) {
+stock bool:IsItemInWorld(itemid) {
 	if(!Iter_Contains(itm_WorldIndex, itemid)) {
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 // itm_ButtonIndex
