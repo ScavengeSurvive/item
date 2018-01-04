@@ -32,33 +32,33 @@
 
 
 // Maximum amount of items that can be created.
-#if !defined ITM_MAX
-	#define ITM_MAX (8192)
+#if !defined MAX_ITEM
+	#define MAX_ITEM (8192)
 #endif
 
 // Maximum amount of item types that can be defined.
-#if !defined ITM_MAX_TYPES
-	#define ITM_MAX_TYPES (ItemType:256)
+#if !defined MAX_ITEM_TYPE
+	#define MAX_ITEM_TYPE (ItemType:256)
 #endif
 
 // Maximum string length for item type names.
-#if !defined ITM_MAX_NAME
-	#define ITM_MAX_NAME (32)
+#if !defined MAX_ITEM_NAME
+	#define MAX_ITEM_NAME (32)
 #endif
 
 // Maximum string length for item specific extra text.
-#if !defined ITM_MAX_TEXT
-	#define ITM_MAX_TEXT (32)
+#if !defined MAX_ITEM_TEXT
+	#define MAX_ITEM_TEXT (32)
 #endif
 
 // Item attachment index for SetPlayerAttachedObject native.
-#if !defined ITM_ATTACH_INDEX
-	#define ITM_ATTACH_INDEX (0)
+#if !defined ITEM_ATTACH_INDEX
+	#define ITEM_ATTACH_INDEX (0)
 #endif
 
 
 // Offset from player Z coordinate to floor Z coordinate
-#define FLOOR_OFFSET (0.96)
+#define ITEM_FLOOR_OFFSET (0.96)
 
 // Item validity check constant
 #define INVALID_ITEM_ID (-1)
@@ -103,7 +103,7 @@ Destroys an item.
 Boolean to indicate success or failure.
 */
 
-forward ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = FLOOR_OFFSET, maxhitpoints = 5);
+forward ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5);
 /*
 # Description
 Defines a new item type with the specified name and model. Item types are the
@@ -696,8 +696,8 @@ When an item's hitpoints value is changed.
 
 
 enum E_ITEM_TYPE_DATA {
-	itm_name[ITM_MAX_NAME],
-	itm_uname[ITM_MAX_NAME],
+	itm_name[MAX_ITEM_NAME],
+	itm_uname[MAX_ITEM_NAME],
 	itm_model,
 	itm_size,
 
@@ -738,25 +738,25 @@ enum E_ITEM_DATA {
 	itm_hitPoints,
 
 	itm_exData,
-	itm_nameEx[ITM_MAX_TEXT],
+	itm_nameEx[MAX_ITEM_TEXT],
 	itm_geid[GEID_LEN]
 }
 
 
 static
-	itm_TypeData[ITM_MAX_TYPES][E_ITEM_TYPE_DATA],
-	itm_TypeCount[ITM_MAX_TYPES],
+	itm_TypeData[MAX_ITEM_TYPE][E_ITEM_TYPE_DATA],
+	itm_TypeCount[MAX_ITEM_TYPE],
 	itm_TypeTotal;
 
 static
-	itm_Data[ITM_MAX][E_ITEM_DATA],
-	bool:itm_Destroying[ITM_MAX],
-	itm_Interactor[ITM_MAX],
-	itm_Holder[ITM_MAX];
+	itm_Data[MAX_ITEM][E_ITEM_DATA],
+	bool:itm_Destroying[MAX_ITEM],
+	itm_Interactor[MAX_ITEM],
+	itm_Holder[MAX_ITEM];
 
 new
-	Iterator:itm_Index<ITM_MAX>,
-	Iterator:itm_WorldIndex<ITM_MAX>,
+	Iterator:itm_Index<MAX_ITEM>,
+	Iterator:itm_WorldIndex<MAX_ITEM>,
 	itm_ButtonIndex[BTN_MAX];
 
 static
@@ -781,7 +781,7 @@ hook OnScriptInit() {
 		itm_Interacting[i] = INVALID_ITEM_ID;
 	}
 
-	for(new i; i < ITM_MAX; i++) {
+	for(new i; i < MAX_ITEM; i++) {
 		itm_Holder[i] = INVALID_PLAYER_ID;
 	}
 
@@ -817,7 +817,7 @@ stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Flo
 	new itemid = Iter_Free(itm_Index);
 
 	if(itemid == INVALID_ITERATOR_SLOT) {
-		err("ITM_MAX limit reached");
+		err("MAX_ITEM limit reached");
 		return INVALID_ITEM_ID;
 	}
 
@@ -877,7 +877,7 @@ stock DestroyItem(itemid, &indexid = -1, &worldindexid = -1) {
 			SetPlayerSpecialAction(itm_Holder[itemid], SPECIAL_ACTION_NONE);
 		}
 
-		RemovePlayerAttachedObject(itm_Holder[itemid], ITM_ATTACH_INDEX);
+		RemovePlayerAttachedObject(itm_Holder[itemid], ITEM_ATTACH_INDEX);
 		itm_Holding[itm_Holder[itemid]] = INVALID_ITEM_ID;
 		itm_Interacting[itm_Holder[itemid]] = INVALID_ITEM_ID;
 		stop itm_InteractTimer[itm_Holder[itemid]];
@@ -904,11 +904,11 @@ stock DestroyItem(itemid, &indexid = -1, &worldindexid = -1) {
 	return 0;
 }
 
-stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = FLOOR_OFFSET, maxhitpoints = 5) {
+stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5) {
 	new ItemType:id = ItemType:itm_TypeTotal;
 
-	if(id == ITM_MAX_TYPES) {
-		fatal("ITM_MAX_TYPES limit reached");
+	if(id == MAX_ITEM_TYPE) {
+		fatal("MAX_ITEM_TYPE limit reached");
 		return INVALID_ITEM_TYPE;
 	}
 
@@ -923,8 +923,8 @@ stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Fl
 
 	itm_TypeTotal++;
 
-	format(itm_TypeData[id][itm_name], ITM_MAX_NAME, name);
-	format(itm_TypeData[id][itm_uname], ITM_MAX_NAME, uname);
+	format(itm_TypeData[id][itm_name], MAX_ITEM_NAME, name);
+	format(itm_TypeData[id][itm_uname], MAX_ITEM_NAME, uname);
 	itm_TypeData[id][itm_model]			= model;
 	itm_TypeData[id][itm_size]			= size;
 
@@ -1097,7 +1097,7 @@ stock GiveWorldItemToPlayer(playerid, itemid, call = 1) {
 	itm_Interactor[itemid]			= INVALID_PLAYER_ID;
 
 	SetPlayerAttachedObject(
-		playerid, ITM_ATTACH_INDEX, itm_TypeData[type][itm_model], itm_TypeData[type][itm_attachBone],
+		playerid, ITEM_ATTACH_INDEX, itm_TypeData[type][itm_model], itm_TypeData[type][itm_attachBone],
 		itm_TypeData[type][itm_attachPosX], itm_TypeData[type][itm_attachPosY], itm_TypeData[type][itm_attachPosZ],
 		itm_TypeData[type][itm_attachRotX], itm_TypeData[type][itm_attachRotY], itm_TypeData[type][itm_attachRotZ],
 		.materialcolor1 = itm_TypeData[type][itm_colour], .materialcolor2 = itm_TypeData[type][itm_colour]);
@@ -1130,7 +1130,7 @@ stock RemoveCurrentItem(playerid) {
 
 	new itemid = itm_Holding[playerid];
 
-	RemovePlayerAttachedObject(playerid, ITM_ATTACH_INDEX);
+	RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 
 	itm_Holding[playerid] = INVALID_ITEM_ID;
@@ -1180,7 +1180,7 @@ stock AllocNextItemID(ItemType:type, geid[] = "") {
 	new itemid = Iter_Free(itm_Index);
 
 	if(itemid == -1) {
-		err("ITM_MAX limit reached");
+		err("MAX_ITEM limit reached");
 		return INVALID_ITEM_ID;
 	}
 
@@ -1469,7 +1469,7 @@ stock SetItemNameExtra(itemid, string[]) {
 	}
 
 	itm_Data[itemid][itm_nameEx][0] = EOS;
-	strcat(itm_Data[itemid][itm_nameEx], string, ITM_MAX_TEXT);
+	strcat(itm_Data[itemid][itm_nameEx], string, MAX_ITEM_TEXT);
 
 	return 0;
 }
@@ -1480,7 +1480,7 @@ stock GetItemNameExtra(itemid, string[]) {
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_Data[itemid][itm_nameEx], ITM_MAX_TEXT);
+	strcat(string, itm_Data[itemid][itm_nameEx], MAX_ITEM_TEXT);
 
 	return 0;
 }
@@ -1512,7 +1512,7 @@ stock GetItemTypeName(ItemType:itemtype, string[]) {
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_TypeData[itemtype][itm_name], ITM_MAX_NAME);
+	strcat(string, itm_TypeData[itemtype][itm_name], MAX_ITEM_NAME);
 
 	return 0;
 }
@@ -1524,7 +1524,7 @@ stock GetItemTypeUniqueName(ItemType:itemtype, string[]) {
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_TypeData[itemtype][itm_uname], ITM_MAX_NAME);
+	strcat(string, itm_TypeData[itemtype][itm_uname], MAX_ITEM_NAME);
 
 	return 0;
 }
@@ -1676,14 +1676,14 @@ stock GetItemName(itemid, string[]) {
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_TypeData[itm_Data[itemid][itm_type]][itm_name], ITM_MAX_NAME + ITM_MAX_TEXT);
+	strcat(string, itm_TypeData[itm_Data[itemid][itm_type]][itm_name], MAX_ITEM_NAME + MAX_ITEM_TEXT);
 
 	CallLocalFunction("OnItemNameRender", "dd", itemid, _:itm_Data[itemid][itm_type]);
 
 	if(!isnull(itm_Data[itemid][itm_nameEx])) {
-		strcat(string, " (", ITM_MAX_NAME + ITM_MAX_TEXT);
-		strcat(string, itm_Data[itemid][itm_nameEx], ITM_MAX_NAME + ITM_MAX_TEXT);
-		strcat(string, ")", ITM_MAX_NAME + ITM_MAX_TEXT);
+		strcat(string, " (", MAX_ITEM_NAME + MAX_ITEM_TEXT);
+		strcat(string, itm_Data[itemid][itm_nameEx], MAX_ITEM_NAME + MAX_ITEM_TEXT);
+		strcat(string, ")", MAX_ITEM_NAME + MAX_ITEM_TEXT);
 	}
 
 	return 0;
@@ -1784,7 +1784,7 @@ CreateItemInWorld(
 	itm_Data[itemid][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[itemid][itm_type]][itm_maxHitPoints] : hitpoints;
 
 	if(itm_Holder[itemid] != INVALID_PLAYER_ID) {
-		RemovePlayerAttachedObject(itm_Holder[itemid], ITM_ATTACH_INDEX);
+		RemovePlayerAttachedObject(itm_Holder[itemid], ITEM_ATTACH_INDEX);
 		SetPlayerSpecialAction(itm_Holder[itemid], SPECIAL_ACTION_NONE);
 
 		itm_Holding[itm_Holder[itemid]] = INVALID_ITEM_ID;
@@ -2069,7 +2069,7 @@ timer DropItemDelay[400](playerid) {
 		return 1;
 	}
 
-	RemovePlayerAttachedObject(playerid, ITM_ATTACH_INDEX);
+	RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 
 	itm_Holding[playerid] = INVALID_ITEM_ID;
@@ -2084,7 +2084,7 @@ timer DropItemDelay[400](playerid) {
 		itemid,
 		x + (0.5 * floatsin(-r, degrees)),
 		y + (0.5 * floatcos(-r, degrees)),
-		z - FLOOR_OFFSET,
+		z - ITEM_FLOOR_OFFSET,
 		0.0,
 		0.0,
 		r,
@@ -2130,11 +2130,11 @@ timer _item_giveItem[500](playerid, targetid) {
 	itm_Holding[playerid] = INVALID_ITEM_ID;
 	itm_Interacting[playerid] = INVALID_ITEM_ID;
 	itm_Interacting[targetid] = INVALID_ITEM_ID;
-	RemovePlayerAttachedObject(playerid, ITM_ATTACH_INDEX);
+	RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
 
 	SetPlayerAttachedObject(
 		targetid,
-		ITM_ATTACH_INDEX,
+		ITEM_ATTACH_INDEX,
 		itm_TypeData[type][itm_model],
 		itm_TypeData[type][itm_attachBone],
 		itm_TypeData[type][itm_attachPosX],
