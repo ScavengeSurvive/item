@@ -56,6 +56,16 @@
 	#define ITEM_ATTACH_INDEX (0)
 #endif
 
+// Key code for interact key
+#if !defined ITEM_KEY_INTERACT
+	#define ITEM_KEY_INTERACT (16)
+#endif
+
+// Key code for dropping items
+#if !defined ITEM_KEY_DROP_ITEM
+	#define ITEM_KEY_DROP_ITEM (KEY_NO)
+#endif
+
 // Game text symbol for interact key
 #if !defined ITEM_GAMETEXT_INTERACT
 	#define ITEM_GAMETEXT_INTERACT "~k~~VEHICLE_ENTER_EXIT~"
@@ -1848,17 +1858,17 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	}
 
 	// Pressed the drop key
-	if(newkeys & KEY_NO) {
+	if(newkeys & ITEM_KEY_DROP_ITEM) {
 		_item_handleDropKeyDown(playerid);
 	}
 
 	// Pressed the interact key
-	if(newkeys & 16 && !(oldkeys & 16)) {
+	if(newkeys & ITEM_KEY_INTERACT && !(oldkeys & ITEM_KEY_INTERACT)) {
 		_item_handleUseKeyDown(playerid);
 	}
 
 	// Released the interact key
-	if(oldkeys & 16 && !(newkeys & 16)) {
+	if(oldkeys & ITEM_KEY_INTERACT && !(newkeys & ITEM_KEY_INTERACT)) {
 		_item_handleUseKeyUp(playerid);
 	}
 
