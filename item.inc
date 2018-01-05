@@ -56,6 +56,16 @@
 	#define ITEM_ATTACH_INDEX (0)
 #endif
 
+// Game text symbol for interact key
+#if !defined ITEM_GAMETEXT_INTERACT
+	#define ITEM_GAMETEXT_INTERACT "~k~~VEHICLE_ENTER_EXIT~"
+#endif
+
+// Game text symbol for dropping items
+#if !defined ITEM_GAMETEXT_DROP_ITEM
+	#define ITEM_GAMETEXT_DROP_ITEM "~k~~CONVERSATION_NO~"
+#endif
+
 
 // Offset from player Z coordinate to floor Z coordinate
 #define ITEM_FLOOR_OFFSET (0.96)
