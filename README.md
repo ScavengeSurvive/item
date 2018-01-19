@@ -12,18 +12,10 @@ Documentation is in the source code.
 
 ## Installation
 
-Simply add to your `pawn.json`/`pawn.yaml`:
-
-```json
-{
-    "dependencies": ["ScavengeSurvive/item"]
-}
-```
-
-Update your `dependencies` directory:
+Simply install to your project:
 
 ```bash
-sampctl package ensure
+sampctl package install ScavengeSurvive/item
 ```
 
 Include in your code and begin using the library:

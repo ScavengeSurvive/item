@@ -1,28 +1,22 @@
 {
-	"user": "ScavengeSurvive",
-	"repo": "item",
-	"entry": "test.pwn",
-	"output": "test.amx",
-	"dependencies": [
-		"Southclaws/samp-stdlib",
-		"Southclaws/samp-logger",
-		"Misiur/YSI-Includes",
-		"ScavengeSurvive/geid",
-		"ScavengeSurvive/button",
-		"ScavengeSurvive/mathutil",
-		"ScavengeSurvive/tick-difference",
-		"ScavengeSurvive/action-text",
-		"ScavengeSurvive/personal-space"
-	],
-	"dev_dependencies": [
-		"ScavengeSurvive/test-boilerplate",
-		"Southclaws/zcmd"
-	],
-	"runtime": {
-		"plugins": [
-			"samp-incognito/samp-streamer-plugin"
-		],
-		"port": null,
-		"maxplayers": null
-	}
+    "user": "ScavengeSurvive",
+    "repo": "item",
+    "entry": "test.pwn",
+    "output": "test.amx",
+    "dependencies": [
+        "Southclaws/samp-stdlib",
+        "Southclaws/samp-logger",
+        "pawn-lang/YSI-Includes",
+        "ScavengeSurvive/geid",
+        "ScavengeSurvive/button",
+        "ScavengeSurvive/mathutil",
+        "ScavengeSurvive/tick-difference",
+        "ScavengeSurvive/action-text",
+        "ScavengeSurvive/personal-space"
+    ],
+    "dev_dependencies": ["ScavengeSurvive/test-boilerplate", "Southclaws/zcmd"],
+    "runtime": {
+        "mode": "y_testing",
+        "plugins": ["samp-incognito/samp-streamer-plugin"]
+    }
 }
