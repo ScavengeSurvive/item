@@ -4,7 +4,7 @@
     "entry": "test.pwn",
     "output": "test.amx",
     "dependencies": [
-        "Southclaws/samp-stdlib",
+        "sampctl/samp-stdlib",
         "Southclaws/samp-logger",
         "pawn-lang/YSI-Includes",
         "ScavengeSurvive/geid",
