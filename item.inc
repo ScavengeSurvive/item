@@ -2116,6 +2116,7 @@ timer DropItemDelay[400](playerid) {
 	Streamer_Update(playerid);
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, 0, 0, 0, 0, 0);
 	CallLocalFunction("OnPlayerDroppedItem", "dd", playerid, itemid);
+	CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, itemid);
 
 	return 1;
 }
