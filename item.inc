@@ -435,13 +435,13 @@ Returns an item type for the specified unique item type name via lookup.
 Boolean to indicate success or failure.
 */
 
-forward GetItemTypeModel(ItemType:itemtype);
+forward GetItemTypeModel(ItemType:itemtype, &model);
 /*
 # Description
 Returns the model assigned to an item type.
 */
 
-forward GetItemTypeSize(ItemType:itemtype);
+forward GetItemTypeSize(ItemType:itemtype, &size);
 /*
 # Description
 Returns the defined size of an item type.
@@ -1564,21 +1564,23 @@ stock ItemType:GetItemTypeFromUniqueName(string[], bool:ignorecase = false) {
 }
 
 // itm_model
-stock GetItemTypeModel(ItemType:itemtype) {
+stock GetItemTypeModel(ItemType:itemtype, &model) {
 	if(!IsValidItemType(itemtype)) {
-		return 0;
+		return 1;
 	}
 
-	return itm_TypeData[itemtype][itm_model];
+	model = itm_TypeData[itemtype][itm_model];
+	return 0;
 }
 
 // itm_size
-stock GetItemTypeSize(ItemType:itemtype) {
+stock GetItemTypeSize(ItemType:itemtype, &size) {
 	if(!IsValidItemType(itemtype)) {
-		return 0;
+		return 1;
 	}
 
-	return itm_TypeData[itemtype][itm_size];
+	size = itm_TypeData[itemtype][itm_size];
+	return 0;
 }
 
 // itm_offsetRotX
