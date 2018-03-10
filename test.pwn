@@ -1,10 +1,14 @@
-#define RUN_TESTS
-
 #include "item.inc"
 
 #include <YSI\y_testing>
 #include <test-boilerplate>
 #include <zcmd>
+
+
+// -
+// Unit tests
+// -
+
 
 Test:DefineItemType() {
 	new ItemType:tmp = DefineItemType(
@@ -34,7 +38,7 @@ Test:CreateDestroyItem() {
 	ASSERT(!IsValidItem(itemid));
 }
 
-dumpItemInfo(itemid) {
+stock dumpItemInfo(itemid) {
 	new
 		Float:x,
 		Float:y,
@@ -43,7 +47,7 @@ dumpItemInfo(itemid) {
 		Float:ry,
 		Float:rz,
 		data,
-		nameExtra[ITM_MAX_TEXT];
+		nameExtra[MAX_ITEM_TEXT];
 
 	GetItemPos(itemid, x, y, z);
 	GetItemRot(itemid, rx, ry, rz);
@@ -72,6 +76,12 @@ dumpItemInfo(itemid) {
 }
 
 new ItemType:item_Medkit;
+
+
+// -
+// Demo tests
+// -
+
 
 main() {
 	item_Medkit = DefineItemType(

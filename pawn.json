@@ -18,5 +18,16 @@
     "runtime": {
         "mode": "y_testing",
         "plugins": ["samp-incognito/samp-streamer-plugin"]
-    }
+    },
+    "builds": [
+        {
+            "name": "unit",
+            "constants": {
+                "RUN_TESTS": ""
+            }
+        },
+        {
+            "name": "demo"
+        }
+    ]
 }
