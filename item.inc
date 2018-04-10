@@ -14,7 +14,7 @@
 #include <YSI\y_iterate>
 #include <YSI\y_timers>
 #include <streamer>
-#include <geid>
+#include <uuid>
 #include <button>
 #include <mathutil>
 #include <tick-difference>
@@ -90,7 +90,7 @@
 // Functions
 
 
-forward CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, geid[] = "", hitpoints = -1);
+forward CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1);
 /*
 # Description
 Creates an item in the game world at the specified coordinates with the
@@ -106,7 +106,7 @@ display a 3D text label above the item.
 - label: True to show a label with the item name at the item.
 - applyrotoffsets: False to make rx, ry, rz rotation values absolute.
 - virtual: When true, the item doesn't have an in-world existence.
-- geid: Allows specific GEID to be set instead of generating one.
+- uuid: Allows specific UUID to be set instead of generating one.
 - hitpoints: -1 by default, if -1 then item type maxhitpoints value is used.
 
 # Returns
@@ -218,7 +218,7 @@ it doesn't exist physically in the game world.
 Boolean to indicate success or failure.
 */
 
-forward AllocNextItemID(ItemType:type, geid[] = "");
+forward AllocNextItemID(ItemType:type, uuid[] = "");
 /*
 # Description
 Preallocates an item ID for a specific item type. This doesn't actually create
@@ -759,7 +759,7 @@ enum E_ITEM_DATA {
 
 	itm_exData,
 	itm_nameEx[MAX_ITEM_TEXT],
-	itm_geid[GEID_LEN]
+	itm_uuid[UUID_LEN]
 }
 
 
@@ -833,7 +833,7 @@ hook OnPlayerDisconnect(playerid, reason) {
 ==============================================================================*/
 
 
-stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, geid[] = "", hitpoints = -1) {
+stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1) {
 	new itemid = Iter_Free(itm_Index);
 
 	if(itemid == INVALID_ITERATOR_SLOT) {
@@ -850,10 +850,11 @@ stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Flo
 
 	Iter_Add(itm_Index, itemid);
 
-	if(geid[0] == EOS) {
-		mkgeid(itemid, itm_Data[itemid][itm_geid]);
+	if(uuid[0] == EOS) {
+		UUID(itm_Data[itemid][itm_uuid]);
 	} else {
-		strcat(itm_Data[itemid][itm_geid], geid, GEID_LEN);
+		itm_Data[itemid][itm_uuid][0] = EOS;
+		strcat(itm_Data[itemid][itm_uuid], uuid, UUID_LEN);
 	}
 
 	itm_Data[itemid][itm_type] = type;
@@ -1196,7 +1197,7 @@ stock RemoveItemFromWorld(itemid) {
 	return 0;
 }
 
-stock AllocNextItemID(ItemType:type, geid[] = "") {
+stock AllocNextItemID(ItemType:type, uuid[] = "") {
 	new itemid = Iter_Free(itm_Index);
 
 	if(itemid == -1) {
@@ -1213,10 +1214,11 @@ stock AllocNextItemID(ItemType:type, geid[] = "") {
 	itm_Data[itemid][itm_type] = type;
 	Iter_Add(itm_Index, itemid);
 
-	if(geid[0] == EOS) {
-		mkgeid(itemid, itm_Data[itemid][itm_geid]);
+	if(uuid[0] == EOS) {
+		UUID(itm_Data[itemid][itm_uuid]);
 	} else {
-		strcat(itm_Data[itemid][itm_geid], geid, GEID_LEN);
+		itm_Data[itemid][itm_uuid][0] = EOS;
+		strcat(itm_Data[itemid][itm_uuid], uuid, UUID_LEN);
 	}
 
 	return itemid;
@@ -1505,14 +1507,14 @@ stock GetItemNameExtra(itemid, string[]) {
 	return 0;
 }
 
-// itm_geid
-stock GetItemGEID(itemid, string[]) {
+// itm_uuid
+stock GetItemUUID(itemid, string[]) {
 	if(!Iter_Contains(itm_Index, itemid)) {
 		return 1;
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_Data[itemid][itm_geid], GEID_LEN);
+	strcat(string, itm_Data[itemid][itm_uuid], UUID_LEN);
 
 	return 0;
 }
