@@ -11,6 +11,7 @@
 
 #include <a_samp>
 #include <logger>
+#include <errors>
 #include <YSI\y_iterate>
 #include <YSI\y_timers>
 #include <streamer>
@@ -33,7 +34,7 @@
 
 // Maximum amount of items that can be created.
 #if !defined MAX_ITEM
-	#define MAX_ITEM (8192)
+	#define MAX_ITEM (Item:8192)
 #endif
 
 // Maximum amount of item types that can be defined.
@@ -81,7 +82,7 @@
 #define ITEM_FLOOR_OFFSET (0.96)
 
 // Item validity check constant
-#define INVALID_ITEM_ID (-1)
+#define INVALID_ITEM_ID (Item:-1)
 
 // Item type validity check constant
 #define INVALID_ITEM_TYPE (ItemType:-1)
@@ -90,7 +91,7 @@
 // Functions
 
 
-forward CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1);
+forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1);
 /*
 # Description
 Creates an item in the game world at the specified coordinates with the
@@ -114,7 +115,7 @@ Item ID handle of the newly created item or INVALID_ITEM_ID If the item index is
 full and no more items can be created.
 */
 
-forward DestroyItem(itemid, &indexid = -1, &worldindexid = -1);
+forward DestroyItem(Item:id, &indexid = -1, &worldindexid = -1);
 /*
 # Description
 Destroys an item.
@@ -150,7 +151,7 @@ Item Type ID handle of the newly defined item type. INVALID_ITEM_TYPE If the
 item type definition index is full and no more item types can be defined.
 */
 
-forward PlayerPickUpItem(playerid, itemid);
+forward PlayerPickUpItem(playerid, Item:id);
 /*
 # Description
 A function to directly make a player pick up an item, regardless of whether he
@@ -183,21 +184,21 @@ forward PlayerUseItem(playerid);
 Forces a player to use their current item, resulting in a call to OnPlayerUseItem.
 */
 
-forward GiveWorldItemToPlayer(playerid, itemid, call = 1);
+forward GiveWorldItemToPlayer(playerid, Item:id, call = 1);
 /*
 # Description
 Give a world item to a player.
 
 # Parameters
 - playerid: The player to give the item to.
-- itemid: The ID handle of the item to give to the player.
+- id: The ID of the item to give to the player.
 - call: Determines whether OnPLayerPickUpItem is called.
 
 # Returns
 Boolean to indicate success or failure.
 */
 
-forward RemoveCurrentItem(playerid);
+forward Item:RemoveCurrentItem(playerid);
 /*
 # Description
 Removes the player's currently held item and places it in the world.
@@ -206,7 +207,7 @@ Removes the player's currently held item and places it in the world.
 INVALID_ITEM_ID If the player ID is invalid or the player isn't holding an item.
 */
 
-forward RemoveItemFromWorld(itemid);
+forward RemoveItemFromWorld(Item:id);
 /*
 # Description
 Removes an item from the world. Deletes all physical elements but keeps the item
@@ -231,7 +232,7 @@ The allocated ID of the item or INVALID_ITEM_ID If there are no more free item
 slots or -2 If the specified type is invalid.
 */
 
-forward CreateItem_ExplicitID(itemid, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1);
+forward CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1);
 /*
 # Description
 Creates an item using an ID allocated from AllocNextItemID. This is the only
@@ -244,25 +245,25 @@ Apart from the explicit item ID, parameters are the same as CreateItem.
 1 On success or 0 if the ID is invalid or is destroyed in OnItemCreate.
 */
 
-forward bool:IsValidItem(itemid);
+forward bool:IsValidItem(Item:id);
 /*
 # Description
 Returns whether the entered value is a valid item ID handle.
 */
 
-forward GetItemObjectID(itemid);
+forward GetItemObjectID(Item:id, &objectid);
 /*
 # Description
 Returns the streamed object ID for a world item. Cannot be a virtual item.
 */
 
-forward GetItemButtonID(itemid);
+forward GetItemButtonID(Item:id, &Button:buttonid);
 /*
 # Description
 Returns the button ID of a world item. Cannot be a virtual item.
 */
 
-forward SetItemLabel(itemid, text[], colour = 0xFFFF00FF, Float:range = 10.0);
+forward SetItemLabel(Item:id, text[], colour = 0xFFFF00FF, Float:range = 10.0);
 /*
 # Description
 Creates or updates a 3D text label above the item. This is actually the label
@@ -279,13 +280,13 @@ forward GetItemTypeCount(ItemType:itemtype);
 Returns the amount of created items of the given type.
 */
 
-forward ItemType:GetItemType(itemid);
+forward ItemType:GetItemType(Item:id);
 /*
 # Description
 Returns the item type of an item.
 */
 
-forward GetItemPos(itemid, &Float:x, &Float:y, &Float:z);
+forward GetItemPos(Item:id, &Float:x, &Float:y, &Float:z);
 /*
 # Description
 Returns the position of a world item. If used on a non-world item such as an
@@ -295,7 +296,7 @@ item being held by a player, it will return the last position of the item.
 Boolean to indicate success or failure.
 */
 
-forward SetItemPos(itemid, Float:x, Float:y, Float:z);
+forward SetItemPos(Item:id, Float:x, Float:y, Float:z);
 /*
 # Description
 Changes the position of an item. This includes the associated object and button.
@@ -304,7 +305,7 @@ Changes the position of an item. This includes the associated object and button.
 Boolean to indicate success or failure.
 */
 
-forward GetItemRot(itemid, &Float:rx, &Float:ry, &Float:rz);
+forward GetItemRot(Item:id, &Float:rx, &Float:ry, &Float:rz);
 /*
 # Description
 Returns the rotation of a world item.
@@ -313,7 +314,7 @@ Returns the rotation of a world item.
 Boolean to indicate success or failure.
 */
 
-forward SetItemRot(itemid, Float:rx, Float:ry, Float:rz, bool:offsetfromdefaults = false);
+forward SetItemRot(Item:id, Float:rx, Float:ry, Float:rz, bool:offsetfromdefaults = false);
 /*
 # Description
 Sets the rotation of a world item object.
@@ -325,7 +326,7 @@ Sets the rotation of a world item object.
 Boolean to indicate success or failure.
 */
 
-forward SetItemWorld(itemid, world);
+forward SetItemWorld(Item:id, world);
 /*
 # Description
 Sets an item's virtual world.
@@ -334,13 +335,13 @@ Sets an item's virtual world.
 Boolean to indicate success or failure.
 */
 
-forward GetItemWorld(itemid);
+forward GetItemWorld(Item:id, &world);
 /*
 # Description
 Returns an item's virtual world.
 */
 
-forward SetItemInterior(itemid, interior);
+forward SetItemInterior(Item:id, interior);
 /*
 # Description
 Sets an item's interior ID.
@@ -349,25 +350,25 @@ Sets an item's interior ID.
 Boolean to indicate success or failure.
 */
 
-forward GetItemInterior(itemid);
+forward GetItemInterior(Item:id, &interior);
 /*
 # Description
 Returns an item's interior ID.
 */
 
-forward SetItemHitPoints(itemid, hitpoints);
+forward SetItemHitPoints(Item:id, hitpoints);
 /*
 # Description
 Sets an item's hitpoint value, destroys the item if 0.
 */
 
-forward GetItemHitPoints(itemid);
+forward GetItemHitPoints(Item:id);
 /*
 # Description
 Returns an item's hitpoint value.
 */
 
-forward SetItemExtraData(itemid, data);
+forward SetItemExtraData(Item:id, data);
 /*
 # Description
 Sets the item's extra data field, this is one cell of data space allocated for
@@ -378,13 +379,13 @@ set of data to act as extra characteristics for items.
 Boolean to indicate success or failure.
 */
 
-forward GetItemExtraData(itemid, &data);
+forward GetItemExtraData(Item:id, &data);
 /*
 # Description
 Retrieves the integer assigned to the item set with SetItemExtraData.
 */
 
-forward SetItemNameExtra(itemid, string[]);
+forward SetItemNameExtra(Item:id, string[]);
 /*
 # Description
 Gives the item a unique string of text to be appended to the name in brackets.
@@ -393,7 +394,7 @@ Gives the item a unique string of text to be appended to the name in brackets.
 Boolean to indicate success or failure.
 */
 
-forward GetItemNameExtra(itemid, string[]);
+forward GetItemNameExtra(Item:id, string[]);
 /*
 # Description
 Retrieves the unique string of text assigned to an item.
@@ -484,13 +485,13 @@ forward bool:IsItemTypeLongPickup(ItemType:itemtype);
 Returns true if the item requires holding the pick-up key in order to pick up.
 */
 
-forward bool:IsItemDestroying(itemid);
+forward bool:IsItemDestroying(Item:id);
 /*
 # Description
 Returns true in OnItemDestroy calls, use to prevent unwanted recursion.
 */
 
-forward GetItemHolder(itemid);
+forward GetItemHolder(Item:id);
 /*
 # Description
 Returns the ID of the player who is holding an item.
@@ -508,7 +509,7 @@ Returns the item ID handle of the item a player is holding.
 INVALID_ITEM_ID if the player isn't holding an item.
 */
 
-forward bool:IsItemInWorld(itemid);
+forward bool:IsItemInWorld(Item:id);
 /*
 # Description
 Checks if an item is in the game world regardless of whether or not the item
@@ -525,7 +526,7 @@ Returns the item ID associated with the specified button ID (if any).
 INVALID_ITEM_ID if the button is not associated with any item.
 */
 
-forward GetItemName(itemid, string[]);
+forward GetItemName(Item:id, string[]);
 /*
 # Description
 Returns the name of the type of the specified item ID and appends the unique
@@ -548,7 +549,7 @@ forward GetPlayerNearbyItems(playerid, list[]);
 Stores a list of items the player is within interaction range of into <list>.
 */
 
-forward GetNextItemID();
+forward Item:GetNextItemID();
 /*
 # Description:
 Returns the next item ID in the index that is unused. Useful for determining
@@ -572,67 +573,67 @@ forward OnItemTypeDefined(uname[]);
 After an item type is defined.
 */
 
-forward OnItemCreate(itemid);
+forward OnItemCreate(Item:itemid);
 /*
 # Called
 As an item is created.
 */
 
-forward OnItemCreated(itemid);
+forward OnItemCreated(Item:itemid);
 /*
 # Called
 After an item is created.
 */
 
-forward OnItemDestroy(itemid);
+forward OnItemDestroy(Item:itemid);
 /*
 # Called
-Before an item is destroyed, the itemid is still valid and existing.
+Before an item is destroyed, the item is still valid and existing.
 */
 
-forward OnItemDestroyed(itemid);
+forward OnItemDestroyed(Item:itemid);
 /*
 # Called
-After an item is destroyed, itemid is now invalid.
+After an item is destroyed, item ID is now invalid.
 */
 
-forward OnItemCreateInWorld(itemid);
+forward OnItemCreateInWorld(Item:itemid);
 /*
 # Called
 After an existing (already created with CreateItem) item is created in the game world (for instance, after a player drops the item, or directly after it is created with CreateItem)
 */
 
-forward OnItemRemoveFromWorld(itemid);
+forward OnItemRemoveFromWorld(Item:itemid);
 /*
 # Called
 After an item is removed from the world either by being given to a player or by calling RemoveItemFromWorld
 */
 
-forward OnPlayerUseItem(playerid, itemid);
+forward OnPlayerUseItem(playerid, Item:itemid);
 /*
 # Called
 When a player presses F/Enter while holding an item.
 */
 
-forward OnPlayerUseItemWithItem(playerid, itemid, withitemid);
+forward OnPlayerUseItemWithItem(playerid, Item:itemid, Item:withitemid);
 /*
 # Called
 When a player uses a held item with an item in the world.
 */
 
-forward OnPlayerUseItemWithButton(playerid, buttonid, itemid);
+forward OnPlayerUseItemWithButton(playerid, Button:buttonid, Item:itemid);
 /*
 # Called
 When a player uses an item while in the area of a button from an item that is in the game world.
 */
 
-forward OnPlayerRelButtonWithItem(playerid, buttonid, itemid);
+forward OnPlayerRelButtonWithItem(playerid, Button:buttonid, Item:itemid);
 /*
 # Called
 When a player releases the interact key after calling OnPlayerUseItemWithButton.
 */
 
-forward OnPlayerPickUpItem(playerid, itemid);
+forward OnPlayerPickUpItem(playerid, Item:itemid);
 /*
 # Called
 When a player presses the button to pick up an item.
@@ -641,7 +642,7 @@ When a player presses the button to pick up an item.
 1 To cancel the pickup request, no animation will play.
 */
 
-forward OnPlayerPickedUpItem(playerid, itemid);
+forward OnPlayerPickedUpItem(playerid, Item:itemid);
 /*
 # Called
 When a player finishes the picking up animation.
@@ -650,13 +651,13 @@ When a player finishes the picking up animation.
 1 To cancel giving the item ID to the player.
 */
 
-forward OnPlayerGetItem(playerid, itemid);
+forward OnPlayerGetItem(playerid, Item:itemid);
 /*
 # Called
 When a player acquires an item from any source.
 */
 
-forward OnPlayerDropItem(playerid, itemid);
+forward OnPlayerDropItem(playerid, Item:itemid);
 /*
 # Called
 When a player presses the button to drop an item.
@@ -665,13 +666,13 @@ When a player presses the button to drop an item.
 1 To cancel the drop, no animation will play and the player will keep their item.
 */
 
-forward OnPlayerDroppedItem(playerid, itemid);
+forward OnPlayerDroppedItem(playerid, Item:itemid);
 /*
 # Called
 When a player finishes the animation for dropping an item.
 */
 
-forward OnPlayerGiveItem(playerid, targetid, itemid);
+forward OnPlayerGiveItem(playerid, targetid, Item:itemid);
 /*
 # Called
 When a player presses the button to give an item to another player.
@@ -680,7 +681,7 @@ When a player presses the button to give an item to another player.
 1 To cancel the give request, no animations will play.
 */
 
-forward OnPlayerGivenItem(playerid, targetid, itemid);
+forward OnPlayerGivenItem(playerid, targetid, Item:itemid);
 /*
 # Called
 When a player finishes the animation for giving an item to another player.
@@ -689,19 +690,19 @@ When a player finishes the animation for giving an item to another player.
 1 To cancel removing the item from the giver and the target receiving the item.
 */
 
-forward OnItemRemovedFromPlayer(playerid, itemid);
+forward OnItemRemovedFromPlayer(playerid, Item:itemid);
 /*
 # Called
 When an item is removed from a player's hands without him dropping it (through a script action)
 */
 
-forward OnItemNameRender(itemid, ItemType:itemtype);
+forward OnItemNameRender(Item:itemid, ItemType:itemtype);
 /*
 # Called
 When the function GetItemName is called, so an additional piece of text can be added to items giving more information unique to that specific item.
 */
 
-forward OnItemHitPointsUpdate(itemid, oldvalue, newvalue);
+forward OnItemHitPointsUpdate(Item:itemid, oldvalue, newvalue);
 /*
 # Called
 When an item's hitpoints value is changed.
@@ -744,7 +745,7 @@ enum E_ITEM_TYPE_DATA {
 
 enum E_ITEM_DATA {
 	itm_objId,
-	itm_button,
+	Button:itm_button,
 	ItemType:itm_type,
 
 	Float:itm_posX,
@@ -775,15 +776,16 @@ static
 	itm_Holder[MAX_ITEM];
 
 new
-	Iterator:itm_Index<MAX_ITEM>,
-	Iterator:itm_WorldIndex<MAX_ITEM>,
-	itm_ButtonIndex[BTN_MAX];
+	Iterator:itm_Index<_:MAX_ITEM>,
+	Iterator:itm_WorldIndex<_:MAX_ITEM>,
+	Item:itm_ButtonIndex[BTN_MAX];
 
 static
-	itm_Holding[MAX_PLAYERS],
+	Item:itm_Holding[MAX_PLAYERS],
 	itm_LongPickupTick[MAX_PLAYERS],
-	itm_Interacting[MAX_PLAYERS],
-	itm_CurrentButton[MAX_PLAYERS],
+	Item:itm_Interacting[MAX_PLAYERS],
+	itm_Giving[MAX_PLAYERS],
+	Button:itm_CurrentButton[MAX_PLAYERS],
 	Timer:itm_InteractTimer[MAX_PLAYERS],
 	Timer:itm_LongPickupTimer[MAX_PLAYERS];
 
@@ -799,13 +801,14 @@ hook OnScriptInit() {
 	for(new i; i < MAX_PLAYERS; i++) {
 		itm_Holding[i] = INVALID_ITEM_ID;
 		itm_Interacting[i] = INVALID_ITEM_ID;
+		itm_Giving[i] = INVALID_PLAYER_ID;
 	}
 
-	for(new i; i < MAX_ITEM; i++) {
+	for(new Item:i; i < MAX_ITEM; i++) {
 		itm_Holder[i] = INVALID_PLAYER_ID;
 	}
 
-	for(new i; i < BTN_MAX; i++) {
+	for(new Button:i; i < BTN_MAX; i++) {
 		itm_ButtonIndex[i] = INVALID_ITEM_ID;
 	}
 
@@ -833,10 +836,10 @@ hook OnPlayerDisconnect(playerid, reason) {
 ==============================================================================*/
 
 
-stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1) {
-	new itemid = Iter_Free(itm_Index);
+stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1) {
+	new Item:id = Item:Iter_Free(itm_Index);
 
-	if(itemid == INVALID_ITERATOR_SLOT) {
+	if(_:id == ITER_NONE) {
 		err("MAX_ITEM limit reached");
 		return INVALID_ITEM_ID;
 	}
@@ -848,22 +851,22 @@ stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Flo
 	}
 
 
-	Iter_Add(itm_Index, itemid);
+	Iter_Add(itm_Index, _:id);
 
 	if(uuid[0] == EOS) {
-		UUID(itm_Data[itemid][itm_uuid]);
+		UUID(itm_Data[id][itm_uuid]);
 	} else {
-		itm_Data[itemid][itm_uuid][0] = EOS;
-		strcat(itm_Data[itemid][itm_uuid], uuid, UUID_LEN);
+		itm_Data[id][itm_uuid][0] = EOS;
+		strcat(itm_Data[id][itm_uuid], uuid, UUID_LEN);
 	}
 
-	itm_Data[itemid][itm_type] = type;
-	itm_Data[itemid][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[itemid][itm_type]][itm_maxHitPoints] : hitpoints;
+	itm_Data[id][itm_type] = type;
+	itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
 	itm_TypeCount[type]++;
 
-	CallLocalFunction("OnItemCreate", "d", itemid);
+	CallLocalFunction("OnItemCreate", "d", _:id);
 
-	if(!Iter_Contains(itm_Index, itemid)) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return INVALID_ITEM_ID;
 	}
 
@@ -872,55 +875,55 @@ stock CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Flo
 	}
 
 	if(!virtual) {
-		CreateItemInWorld(itemid, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints);
+		CreateItemInWorld(id, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints);
 	}
 
-	CallLocalFunction("OnItemCreated", "d", itemid);
+	CallLocalFunction("OnItemCreated", "d", _:id);
 
-	return itemid;
+	return id;
 }
 
-stock DestroyItem(itemid, &indexid = -1, &worldindexid = -1) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock DestroyItem(Item:id, &indexid = -1, &worldindexid = -1) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	if(itm_Destroying[itemid]) {
+	if(itm_Destroying[id]) {
 		return 2;
 	}
 
-	itm_Destroying[itemid] = true;
+	itm_Destroying[id] = true;
 
-	CallLocalFunction("OnItemDestroy", "d", itemid);
+	CallLocalFunction("OnItemDestroy", "d", _:id);
 
-	if(itm_Holder[itemid] != INVALID_PLAYER_ID) {
-		if(itm_TypeData[itm_Data[itemid][itm_type]][itm_useCarryAnim]) {
-			SetPlayerSpecialAction(itm_Holder[itemid], SPECIAL_ACTION_NONE);
+	if(itm_Holder[id] != INVALID_PLAYER_ID) {
+		if(itm_TypeData[itm_Data[id][itm_type]][itm_useCarryAnim]) {
+			SetPlayerSpecialAction(itm_Holder[id], SPECIAL_ACTION_NONE);
 		}
 
-		RemovePlayerAttachedObject(itm_Holder[itemid], ITEM_ATTACH_INDEX);
-		itm_Holding[itm_Holder[itemid]] = INVALID_ITEM_ID;
-		itm_Interacting[itm_Holder[itemid]] = INVALID_ITEM_ID;
-		stop itm_InteractTimer[itm_Holder[itemid]];
-	} else if(Iter_Contains(itm_WorldIndex, itemid)) {
-		DestroyDynamicObject(itm_Data[itemid][itm_objId]);
-		DestroyButton(itm_Data[itemid][itm_button]);
-		itm_ButtonIndex[itm_Data[itemid][itm_button]] = INVALID_BUTTON_ID;
+		RemovePlayerAttachedObject(itm_Holder[id], ITEM_ATTACH_INDEX);
+		itm_Holding[itm_Holder[id]] = INVALID_ITEM_ID;
+		itm_Interacting[itm_Holder[id]] = INVALID_ITEM_ID;
+		stop itm_InteractTimer[itm_Holder[id]];
+	} else if(Iter_Contains(itm_WorldIndex, _:id)) {
+		DestroyDynamicObject(itm_Data[id][itm_objId]);
+		DestroyButton(itm_Data[id][itm_button]);
+		itm_ButtonIndex[itm_Data[id][itm_button]] = INVALID_ITEM_ID;
 	}
 
-	itm_TypeCount[itm_Data[itemid][itm_type]]--;
+	itm_TypeCount[itm_Data[id][itm_type]]--;
 
-	itm_Data[itemid][itm_objId] = -1;
-	itm_Data[itemid][itm_button] = INVALID_BUTTON_ID;
-	itm_Holder[itemid] = INVALID_PLAYER_ID;
-	itm_Interactor[itemid] = INVALID_PLAYER_ID;
+	itm_Data[id][itm_objId] = -1;
+	itm_Data[id][itm_button] = INVALID_BUTTON_ID;
+	itm_Holder[id] = INVALID_PLAYER_ID;
+	itm_Interactor[id] = INVALID_PLAYER_ID;
 
-	Iter_SafeRemove(itm_Index, itemid, indexid);
-	Iter_SafeRemove(itm_WorldIndex, itemid, worldindexid);
+	Iter_SafeRemove(itm_Index, _:id, indexid);
+	Iter_SafeRemove(itm_WorldIndex, _:id, worldindexid);
 
-	CallLocalFunction("OnItemDestroyed", "d", itemid);
+	CallLocalFunction("OnItemDestroyed", "d", _:id);
 
-	itm_Destroying[itemid] = false;
+	itm_Destroying[id] = false;
 
 	return 0;
 }
@@ -974,12 +977,12 @@ stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Fl
 	return id;
 }
 
-stock PlayerPickUpItem(playerid, itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock PlayerPickUpItem(playerid, Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	if(Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return 2;
 	}
 
@@ -992,36 +995,36 @@ stock PlayerPickUpItem(playerid, itemid) {
 
 	ClearAnimations(playerid);
 	SetPlayerPos(playerid, x, y, z);
-	SetPlayerFacingAngle(playerid, GetAngleToPoint(x, y, itm_Data[itemid][itm_posX], itm_Data[itemid][itm_posY]));
+	SetPlayerFacingAngle(playerid, GetAngleToPoint(x, y, itm_Data[id][itm_posX], itm_Data[id][itm_posY]));
 
-	if((z - itm_Data[itemid][itm_posZ]) < 0.3) { // If the height between the player and the item is below 0.5 units
-		if(itm_TypeData[itm_Data[itemid][itm_type]][itm_useCarryAnim]) {
+	if((z - itm_Data[id][itm_posZ]) < 0.3) { // If the height between the player and the item is below 0.5 units
+		if(itm_TypeData[itm_Data[id][itm_type]][itm_useCarryAnim]) {
 			ApplyAnimation(playerid, "CARRY", "liftup105", 5.0, 0, 0, 0, 0, 400);
 		} else {
 			ApplyAnimation(playerid, "CASINO", "SLOT_PLYR", 4.0, 0, 0, 0, 0, 0);
 		}
-		itm_InteractTimer[playerid] = defer PickUpItemDelay(playerid, itemid, 1);
+		itm_InteractTimer[playerid] = defer PickUpItemDelay(playerid, _:id, 1);
 	} else {
-		if(itm_TypeData[itm_Data[itemid][itm_type]][itm_useCarryAnim]) {
+		if(itm_TypeData[itm_Data[id][itm_type]][itm_useCarryAnim]) {
 			ApplyAnimation(playerid, "CARRY", "liftup", 5.0, 0, 0, 0, 0, 400);
 		} else {
 			ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_IN", 5.0, 0, 0, 0, 0, 450);
 		}
-		itm_InteractTimer[playerid] = defer PickUpItemDelay(playerid, itemid, 0);
+		itm_InteractTimer[playerid] = defer PickUpItemDelay(playerid, _:id, 0);
 	}
 
-	itm_Interacting[playerid] = itemid;
-	itm_Interactor[itemid] = playerid;
+	itm_Interacting[playerid] = id;
+	itm_Interactor[id] = playerid;
 
 	return 0;
 }
 
 stock PlayerDropItem(playerid) {
-	if(!Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return 1;
 	}
 
-	if(CallLocalFunction("OnPlayerDropItem", "dd", playerid, itm_Holding[playerid])) {
+	if(CallLocalFunction("OnPlayerDropItem", "dd", playerid, _:itm_Holding[playerid])) {
 		return 2;
 	}
 
@@ -1041,23 +1044,23 @@ stock PlayerGiveItem(playerid, targetid, call = true) {
 		return 1;
 	}
 
-	if(!Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return 2;
 	}
 
-	new itemid = itm_Holding[playerid];
+	new Item:id = itm_Holding[playerid];
 
 	if(call) {
-		if(CallLocalFunction("OnPlayerGiveItem", "ddd", playerid, targetid, itemid)) {
+		if(CallLocalFunction("OnPlayerGiveItem", "ddd", playerid, targetid, _:id)) {
 			return 3;
 		}
 	}
 
-	if(!Iter_Contains(itm_Index, itemid)) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 4;
 	}
 
-	if(Iter_Contains(itm_Index, itm_Holding[targetid])) {
+	if(Iter_Contains(itm_Index, _:itm_Holding[targetid])) {
 		return 5;
 	}
 
@@ -1078,16 +1081,16 @@ stock PlayerGiveItem(playerid, targetid, call = true) {
 	SetPlayerFacingAngle(playerid, angle);
 	SetPlayerFacingAngle(targetid, angle+180.0);
 
-	if(!itm_TypeData[itm_Data[itemid][itm_type]][itm_useCarryAnim]) {
+	if(!itm_TypeData[itm_Data[id][itm_type]][itm_useCarryAnim]) {
 		ApplyAnimation(playerid, "CASINO", "SLOT_PLYR", 4.0, 0, 0, 0, 0, 450);
 		ApplyAnimation(targetid, "CASINO", "SLOT_PLYR", 4.0, 0, 0, 0, 0, 450);
 	} else {
 		SetPlayerSpecialAction(targetid, SPECIAL_ACTION_CARRY);
 	}
 
-	itm_Interacting[playerid]	= targetid;
-	itm_Interacting[targetid]	= playerid;
-	itm_Holder[itemid]			= playerid;
+	itm_Giving[playerid] = targetid;
+	itm_Giving[targetid] = playerid;
+	itm_Holder[id] = playerid;
 
 	itm_InteractTimer[playerid] = defer _item_giveItem(playerid, targetid);
 
@@ -1098,24 +1101,24 @@ stock PlayerUseItem(playerid) {
 	return _item_onPlayerUseItem(playerid, itm_Holding[playerid]);
 }
 
-stock GiveWorldItemToPlayer(playerid, itemid, call = 1) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GiveWorldItemToPlayer(playerid, Item:id, call = 1) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	RemoveItemFromWorld(itemid);
-	RemoveCurrentItem(GetItemHolder(itemid));
+	RemoveItemFromWorld(id);
+	RemoveCurrentItem(GetItemHolder(id));
 
-	new ItemType:type = itm_Data[itemid][itm_type];
+	new ItemType:type = itm_Data[id][itm_type];
 
-	itm_Data[itemid][itm_posX]		= 0.0;
-	itm_Data[itemid][itm_posY]		= 0.0;
-	itm_Data[itemid][itm_posZ]		= 0.0;
+	itm_Data[id][itm_posX]		= 0.0;
+	itm_Data[id][itm_posY]		= 0.0;
+	itm_Data[id][itm_posZ]		= 0.0;
 
-	itm_Holding[playerid]			= itemid;
-	itm_Holder[itemid]				= playerid;
+	itm_Holding[playerid]			= id;
+	itm_Holder[id]				= playerid;
 	itm_Interacting[playerid]		= INVALID_ITEM_ID;
-	itm_Interactor[itemid]			= INVALID_PLAYER_ID;
+	itm_Interactor[id]			= INVALID_PLAYER_ID;
 
 	SetPlayerAttachedObject(
 		playerid, ITEM_ATTACH_INDEX, itm_TypeData[type][itm_model], itm_TypeData[type][itm_attachBone],
@@ -1128,11 +1131,11 @@ stock GiveWorldItemToPlayer(playerid, itemid, call = 1) {
 	}
 
 	if(call) {
-		if(CallLocalFunction("OnPlayerGetItem", "dd", playerid, itemid)) {
+		if(CallLocalFunction("OnPlayerGetItem", "dd", playerid, _:id)) {
 			return 2;
 		}
 
-		if(!Iter_Contains(itm_Index, itemid)) {
+		if(!Iter_Contains(itm_Index, _:id)) {
 			return 3;
 		}
 	}
@@ -1140,67 +1143,67 @@ stock GiveWorldItemToPlayer(playerid, itemid, call = 1) {
 	return 0;
 }
 
-stock RemoveCurrentItem(playerid) {
+stock Item:RemoveCurrentItem(playerid) {
 	if(!(0 <= playerid < MAX_PLAYERS)) {
 		return INVALID_ITEM_ID;
 	}
 
-	if(!Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return INVALID_ITEM_ID;
 	}
 
-	new itemid = itm_Holding[playerid];
+	new Item:id = itm_Holding[playerid];
 
 	RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 
 	itm_Holding[playerid] = INVALID_ITEM_ID;
 	itm_Interacting[playerid] = INVALID_ITEM_ID;
-	itm_Holder[itemid] = INVALID_PLAYER_ID;
-	itm_Interactor[itemid] = INVALID_PLAYER_ID;
+	itm_Holder[id] = INVALID_PLAYER_ID;
+	itm_Interactor[id] = INVALID_PLAYER_ID;
 
-	CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, itemid);
+	CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
 
-	return itemid;
+	return id;
 
 }
 
-stock RemoveItemFromWorld(itemid) {
-	if(!Iter_Contains(itm_Index, _:itemid)) {
+stock RemoveItemFromWorld(Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	if(!Iter_Contains(itm_WorldIndex, _:itemid)) {
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
 		return 2;
 	}
 
-	if(itm_Holder[itemid] != INVALID_PLAYER_ID) {
+	if(itm_Holder[id] != INVALID_PLAYER_ID) {
 		err("RemoveItemFromWorld unexpected state player was holding item that was in-world.",
-			_i("playerid", itm_Holder[itemid]),
-			_i("itemid", itemid));
+			_i("playerid", itm_Holder[id]),
+			_i("itemid", _:id));
 
-		RemoveCurrentItem(itm_Holder[itemid]);
+		RemoveCurrentItem(itm_Holder[id]);
 	}
 
-	DestroyDynamicObject(itm_Data[itemid][itm_objId]);
+	DestroyDynamicObject(itm_Data[id][itm_objId]);
 
-	DestroyButton(itm_Data[itemid][itm_button]);
+	DestroyButton(itm_Data[id][itm_button]);
 
-	itm_ButtonIndex[itm_Data[itemid][itm_button]] = INVALID_BUTTON_ID;
-	itm_Data[itemid][itm_objId] = -1;
-	itm_Data[itemid][itm_button] = INVALID_BUTTON_ID;
+	itm_ButtonIndex[itm_Data[id][itm_button]] = INVALID_ITEM_ID;
+	itm_Data[id][itm_objId] = -1;
+	itm_Data[id][itm_button] = INVALID_BUTTON_ID;
 
-	Iter_Remove(itm_WorldIndex, itemid);
+	Iter_Remove(itm_WorldIndex, _:id);
 
-	CallRemoteFunction("OnItemRemoveFromWorld", "d", itemid);
+	CallRemoteFunction("OnItemRemoveFromWorld", "d", _:id);
 
 	return 0;
 }
 
 stock AllocNextItemID(ItemType:type, uuid[] = "") {
-	new itemid = Iter_Free(itm_Index);
+	new Item:id = Iter_Free(itm_Index);
 
-	if(itemid == -1) {
+	if(id == ITER_NONE) {
 		err("MAX_ITEM limit reached");
 		return INVALID_ITEM_ID;
 	}
@@ -1211,29 +1214,29 @@ stock AllocNextItemID(ItemType:type, uuid[] = "") {
 		return INVALID_ITEM_ID;
 	}
 
-	itm_Data[itemid][itm_type] = type;
-	Iter_Add(itm_Index, itemid);
+	itm_Data[id][itm_type] = type;
+	Iter_Add(itm_Index, id);
 
 	if(uuid[0] == EOS) {
-		UUID(itm_Data[itemid][itm_uuid]);
+		UUID(itm_Data[id][itm_uuid]);
 	} else {
-		itm_Data[itemid][itm_uuid][0] = EOS;
-		strcat(itm_Data[itemid][itm_uuid], uuid, UUID_LEN);
+		itm_Data[id][itm_uuid][0] = EOS;
+		strcat(itm_Data[id][itm_uuid], uuid, UUID_LEN);
 	}
 
-	return itemid;
+	return id;
 }
 
-stock CreateItem_ExplicitID(itemid, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	itm_TypeCount[itm_Data[itemid][itm_type]]++;
+	itm_TypeCount[itm_Data[id][itm_type]]++;
 
-	CallLocalFunction("OnItemCreate", "d", itemid);
+	CallLocalFunction("OnItemCreate", "d", id);
 
-	if(!Iter_Contains(itm_Index, itemid)) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 2;
 	}
 
@@ -1241,19 +1244,19 @@ stock CreateItem_ExplicitID(itemid, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0,
 		virtual = 1;
 	}
 
-	itm_Data[itemid][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[itemid][itm_type]][itm_maxHitPoints] : hitpoints;
+	itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
 
 	if(!virtual) {
-		CreateItemInWorld(itemid, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints);
+		CreateItemInWorld(id, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints);
 	}
 
-	CallLocalFunction("OnItemCreated", "d", itemid);
+	CallLocalFunction("OnItemCreated", "d", id);
 
 	return 0;
 }
 
-stock bool:IsValidItem(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock bool:IsValidItem(Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return false;
 	}
 
@@ -1261,37 +1264,39 @@ stock bool:IsValidItem(itemid) {
 }
 
 // itm_objId
-stock GetItemObjectID(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
-		return INVALID_OBJECT_ID;
-	}
-
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
-		return INVALID_OBJECT_ID;
-	}
-
-	return itm_Data[itemid][itm_objId];
-}
-
-// itm_button
-stock GetItemButtonID(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
-		return INVALID_BUTTON_ID;
-	}
-
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
-		return INVALID_BUTTON_ID;
-	}
-
-	return itm_Data[itemid][itm_button];
-}
-
-stock SetItemLabel(itemid, text[], colour = 0xFFFF00FF, Float:range = 10.0) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemObjectID(Item:id, &objectid) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	SetButtonLabel(itm_Data[itemid][itm_button], text, colour, range);
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
+		return 2;
+	}
+
+	objectid = itm_Data[id][itm_objId];
+	return 0;
+}
+
+// itm_button
+stock GetItemButtonID(Item:id, &Button:buttonid) {
+	if(!Iter_Contains(itm_Index, _:id)) {
+		return 1;
+	}
+
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
+		return 2;
+	}
+
+	buttonid = itm_Data[id][itm_button];
+	return 0;
+}
+
+stock SetItemLabel(Item:id, text[], colour = 0xFFFF00FF, Float:range = 10.0) {
+	if(!Iter_Contains(itm_Index, _:id)) {
+		return 1;
+	}
+
+	SetButtonLabel(itm_Data[id][itm_button], text, colour, range);
 
 	return 0;
 }
@@ -1305,216 +1310,218 @@ stock GetItemTypeCount(ItemType:itemtype) {
 }
 
 // itm_type
-stock ItemType:GetItemType(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock ItemType:GetItemType(Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return INVALID_ITEM_TYPE;
 	}
 
-	return itm_Data[itemid][itm_type];
+	return itm_Data[id][itm_type];
 }
 
 // itm_posX
 // itm_posY
 // itm_posZ
-stock GetItemPos(itemid, &Float:x, &Float:y, &Float:z) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemPos(Item:id, &Float:x, &Float:y, &Float:z) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	x = itm_Data[itemid][itm_posX];
-	y = itm_Data[itemid][itm_posY];
-	z = itm_Data[itemid][itm_posZ];
+	x = itm_Data[id][itm_posX];
+	y = itm_Data[id][itm_posY];
+	z = itm_Data[id][itm_posZ];
 
 	return 0;
 }
 
-stock SetItemPos(itemid, Float:x, Float:y, Float:z) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock SetItemPos(Item:id, Float:x, Float:y, Float:z) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	itm_Data[itemid][itm_posX] = x;
-	itm_Data[itemid][itm_posY] = y;
-	itm_Data[itemid][itm_posZ] = z;
+	itm_Data[id][itm_posX] = x;
+	itm_Data[id][itm_posY] = y;
+	itm_Data[id][itm_posZ] = z;
 
-	SetButtonPos(itm_Data[itemid][itm_button], x, y, z + itm_TypeData[itm_Data[itemid][itm_type]][itm_zButtonOffset]);
-	SetDynamicObjectPos(itm_Data[itemid][itm_objId], x, y, z + itm_TypeData[itm_Data[itemid][itm_type]][itm_zModelOffset]);
+	SetButtonPos(itm_Data[id][itm_button], x, y, z + itm_TypeData[itm_Data[id][itm_type]][itm_zButtonOffset]);
+	SetDynamicObjectPos(itm_Data[id][itm_objId], x, y, z + itm_TypeData[itm_Data[id][itm_type]][itm_zModelOffset]);
 
 	return 0;
 }
 
-stock GetItemRot(itemid, &Float:rx, &Float:ry, &Float:rz) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemRot(Item:id, &Float:rx, &Float:ry, &Float:rz) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	rx = itm_Data[itemid][itm_rotX];
-	ry = itm_Data[itemid][itm_rotY];
-	rz = itm_Data[itemid][itm_rotZ];
+	rx = itm_Data[id][itm_rotX];
+	ry = itm_Data[id][itm_rotY];
+	rz = itm_Data[id][itm_rotZ];
 
 	return 0;
 }
 
-stock SetItemRot(itemid, Float:rx, Float:ry, Float:rz, bool:offsetfromdefaults = false) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock SetItemRot(Item:id, Float:rx, Float:ry, Float:rz, bool:offsetfromdefaults = false) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
 		return 2;
 	}
 
 	if(offsetfromdefaults) {
-		SetDynamicObjectRot(itm_Data[itemid][itm_objId],
-			itm_TypeData[itm_Data[itemid][itm_type]][itm_offsetRotX] + rx,
-			itm_TypeData[itm_Data[itemid][itm_type]][itm_offsetRotY] + ry,
-			itm_TypeData[itm_Data[itemid][itm_type]][itm_offsetRotZ] + rz);
+		SetDynamicObjectRot(itm_Data[id][itm_objId],
+			itm_TypeData[itm_Data[id][itm_type]][itm_offsetRotX] + rx,
+			itm_TypeData[itm_Data[id][itm_type]][itm_offsetRotY] + ry,
+			itm_TypeData[itm_Data[id][itm_type]][itm_offsetRotZ] + rz);
 	} else {
-		SetDynamicObjectRot(itm_Data[itemid][itm_objId], rx, ry, rz);
+		SetDynamicObjectRot(itm_Data[id][itm_objId], rx, ry, rz);
 	}
 
-	itm_Data[itemid][itm_rotX] = rx;
-	itm_Data[itemid][itm_rotY] = ry;
-	itm_Data[itemid][itm_rotZ] = rz;
+	itm_Data[id][itm_rotX] = rx;
+	itm_Data[id][itm_rotY] = ry;
+	itm_Data[id][itm_rotZ] = rz;
 
 	return 0;
 }
 
 // itm_world
-stock SetItemWorld(itemid, world) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock SetItemWorld(Item:id, world) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
 		return 2;
 	}
 
-	SetButtonWorld(itm_Data[itemid][itm_button], world);
-	itm_Data[itemid][itm_world] = world;
+	SetButtonWorld(itm_Data[id][itm_button], world);
+	itm_Data[id][itm_world] = world;
 
 	return 0;
 }
 
-stock GetItemWorld(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
-		return -1;
+stock GetItemWorld(Item:id, &world) {
+	if(!Iter_Contains(itm_Index, _:id)) {
+		return 1;
 	}
 
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
-		return -2;
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
+		return 2;
 	}
 
-	return itm_Data[itemid][itm_world];
+	world = itm_Data[id][itm_world];
+	return 0;
 }
 
 // itm_interior
-stock SetItemInterior(itemid, interior) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock SetItemInterior(Item:id, interior) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
 		return 2;
 	}
 
-	SetButtonInterior(itm_Data[itemid][itm_button], interior);
-	itm_Data[itemid][itm_interior] = interior;
+	SetButtonInterior(itm_Data[id][itm_button], interior);
+	itm_Data[id][itm_interior] = interior;
 
 	return 0;
 }
 
-stock GetItemInterior(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
-		return -1;
+stock GetItemInterior(Item:id, &interior) {
+	if(!Iter_Contains(itm_Index, _:id)) {
+		return 1;
 	}
 
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
-		return -2;
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
+		return 2;
 	}
 
-	return itm_Data[itemid][itm_interior];
+	interior = itm_Data[id][itm_interior];
+	return 0;
 }
 
 // itm_hitPoints
-stock SetItemHitPoints(itemid, hitpoints) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock SetItemHitPoints(Item:id, hitpoints) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	new old = itm_Data[itemid][itm_hitPoints];
+	new old = itm_Data[id][itm_hitPoints];
 
-	itm_Data[itemid][itm_hitPoints] = hitpoints;
+	itm_Data[id][itm_hitPoints] = hitpoints;
 
-	CallLocalFunction("OnItemHitPointsUpdate", "ddd", itemid, old, hitpoints);
+	CallLocalFunction("OnItemHitPointsUpdate", "ddd", id, old, hitpoints);
 
-	if(itm_Data[itemid][itm_hitPoints] <= 0) {
-		DestroyItem(itemid);
+	if(itm_Data[id][itm_hitPoints] <= 0) {
+		DestroyItem(id);
 	}
 
 	return 0;
 }
 
-stock GetItemHitPoints(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemHitPoints(Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return -1;
 	}
 
-	return itm_Data[itemid][itm_hitPoints];
+	return itm_Data[id][itm_hitPoints];
 }
 
 // itm_exData
-stock SetItemExtraData(itemid, data) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock SetItemExtraData(Item:id, data) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	itm_Data[itemid][itm_exData] = data;
+	itm_Data[id][itm_exData] = data;
 
 	return 0;
 }
 
-stock GetItemExtraData(itemid, &data) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemExtraData(Item:id, &data) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	data = itm_Data[itemid][itm_exData];
+	data = itm_Data[id][itm_exData];
 
 	return 0;
 }
 
 // itm_nameEx
-stock SetItemNameExtra(itemid, string[]) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock SetItemNameExtra(Item:id, string[]) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	itm_Data[itemid][itm_nameEx][0] = EOS;
-	strcat(itm_Data[itemid][itm_nameEx], string, MAX_ITEM_TEXT);
+	itm_Data[id][itm_nameEx][0] = EOS;
+	strcat(itm_Data[id][itm_nameEx], string, MAX_ITEM_TEXT);
 
 	return 0;
 }
 
-stock GetItemNameExtra(itemid, string[]) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemNameExtra(Item:id, string[]) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_Data[itemid][itm_nameEx], MAX_ITEM_TEXT);
+	strcat(string, itm_Data[id][itm_nameEx], MAX_ITEM_TEXT);
 
 	return 0;
 }
 
 // itm_uuid
-stock GetItemUUID(itemid, string[]) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemUUID(id, string[]) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_Data[itemid][itm_uuid], UUID_LEN);
+	strcat(string, itm_Data[id][itm_uuid], UUID_LEN);
 
 	return 0;
 }
@@ -1647,26 +1654,26 @@ stock GetItemTypeMaxHitPoints(ItemType:itemtype) {
 }
 
 // itm_Destroying
-stock bool:IsItemDestroying(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock bool:IsItemDestroying(Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return false;
 	}
 
-	return itm_Destroying[itemid];
+	return itm_Destroying[id];
 }
 
 // itm_Holder
-stock GetItemHolder(itemid) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemHolder(Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return INVALID_PLAYER_ID;
 	}
 
-	return itm_Holder[itemid];
+	return itm_Holder[id];
 }
 
 // itm_Holding
 stock GetPlayerItem(playerid) {
-	if(!Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return INVALID_ITEM_ID;
 	}
 
@@ -1677,8 +1684,8 @@ stock GetPlayerItem(playerid) {
 	return itm_Holding[playerid];
 }
 
-stock bool:IsItemInWorld(itemid) {
-	if(!Iter_Contains(itm_WorldIndex, itemid)) {
+stock bool:IsItemInWorld(Item:id) {
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
 		return false;
 	}
 
@@ -1694,19 +1701,19 @@ stock GetItemFromButtonID(buttonid) {
 	return itm_ButtonIndex[buttonid];
 }
 
-stock GetItemName(itemid, string[]) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+stock GetItemName(Item:id, string[]) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
 	string[0] = EOS;
-	strcat(string, itm_TypeData[itm_Data[itemid][itm_type]][itm_name], MAX_ITEM_NAME + MAX_ITEM_TEXT);
+	strcat(string, itm_TypeData[itm_Data[id][itm_type]][itm_name], MAX_ITEM_NAME + MAX_ITEM_TEXT);
 
-	CallLocalFunction("OnItemNameRender", "dd", itemid, _:itm_Data[itemid][itm_type]);
+	CallLocalFunction("OnItemNameRender", "dd", id, _:itm_Data[id][itm_type]);
 
-	if(!isnull(itm_Data[itemid][itm_nameEx])) {
+	if(!isnull(itm_Data[id][itm_nameEx])) {
 		strcat(string, " (", MAX_ITEM_NAME + MAX_ITEM_TEXT);
-		strcat(string, itm_Data[itemid][itm_nameEx], MAX_ITEM_NAME + MAX_ITEM_TEXT);
+		strcat(string, itm_Data[id][itm_nameEx], MAX_ITEM_NAME + MAX_ITEM_TEXT);
 		strcat(string, ")", MAX_ITEM_NAME + MAX_ITEM_TEXT);
 	}
 
@@ -1738,8 +1745,8 @@ stock GetPlayerNearbyItems(playerid, list[]) {
 	return itemcount;
 }
 
-stock GetNextItemID() {
-	return Iter_Free(itm_Index);
+stock Item:GetNextItemID() {
+	return Item:Iter_Free(itm_Index);
 }
 
 stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], maxitems = sizeof(items)) {
@@ -1747,7 +1754,7 @@ stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], m
 		streamer_items[256],
 		streamer_count,
 		data[2],
-		itemid,
+		id,
 		count;
 
 	streamer_count = Streamer_GetNearbyItems(x, y, z, STREAMER_TYPE_AREA, streamer_items, .range = range);
@@ -1759,10 +1766,10 @@ stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], m
 			continue;
 		}
 
-		itemid = GetItemFromButtonID(data[1]);
+		id = GetItemFromButtonID(data[1]);
 
-		if(IsValidItem(itemid)) {
-			items[count++] = itemid;
+		if(IsValidItem(id)) {
+			items[count++] = id;
 		}
 	}
 
@@ -1778,80 +1785,80 @@ stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], m
 
 
 CreateItemInWorld(
-	itemid,
+	Item:id,
 	Float:x = 0.0, Float:y = 0.0, Float:z = 0.0,
 	Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0,
 	world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1
 ) {
-	if(!Iter_Contains(itm_Index, itemid)) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
-	if(Iter_Contains(itm_WorldIndex, itemid)) {
+	if(Iter_Contains(itm_WorldIndex, _:id)) {
 		return 2;
 	}
 
-	new ItemType:itemtype = itm_Data[itemid][itm_type];
+	new ItemType:itemtype = itm_Data[id][itm_type];
 
 	if(!IsValidItemType(itemtype)) {
 		return 3;
 	}
 
-	itm_Data[itemid][itm_posX] = x;
-	itm_Data[itemid][itm_posY] = y;
-	itm_Data[itemid][itm_posZ] = z;
-	itm_Data[itemid][itm_rotX] = rx;
-	itm_Data[itemid][itm_rotY] = ry;
-	itm_Data[itemid][itm_rotZ] = rz;
-	itm_Data[itemid][itm_world] = world;
-	itm_Data[itemid][itm_interior] = interior;
-	itm_Data[itemid][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[itemid][itm_type]][itm_maxHitPoints] : hitpoints;
+	itm_Data[id][itm_posX] = x;
+	itm_Data[id][itm_posY] = y;
+	itm_Data[id][itm_posZ] = z;
+	itm_Data[id][itm_rotX] = rx;
+	itm_Data[id][itm_rotY] = ry;
+	itm_Data[id][itm_rotZ] = rz;
+	itm_Data[id][itm_world] = world;
+	itm_Data[id][itm_interior] = interior;
+	itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
 
-	if(itm_Holder[itemid] != INVALID_PLAYER_ID) {
-		RemovePlayerAttachedObject(itm_Holder[itemid], ITEM_ATTACH_INDEX);
-		SetPlayerSpecialAction(itm_Holder[itemid], SPECIAL_ACTION_NONE);
+	if(itm_Holder[id] != INVALID_PLAYER_ID) {
+		RemovePlayerAttachedObject(itm_Holder[id], ITEM_ATTACH_INDEX);
+		SetPlayerSpecialAction(itm_Holder[id], SPECIAL_ACTION_NONE);
 
-		itm_Holding[itm_Holder[itemid]] = INVALID_ITEM_ID;
-		itm_Interacting[itm_Holder[itemid]] = INVALID_ITEM_ID;
+		itm_Holding[itm_Holder[id]] = INVALID_ITEM_ID;
+		itm_Interacting[itm_Holder[id]] = INVALID_ITEM_ID;
 	}
 
-	itm_Interactor[itemid] = INVALID_PLAYER_ID;
-	itm_Holder[itemid] = INVALID_PLAYER_ID;
+	itm_Interactor[id] = INVALID_PLAYER_ID;
+	itm_Holder[id] = INVALID_PLAYER_ID;
 
 	if(applyrotoffsets) {
-		itm_Data[itemid][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
+		itm_Data[id][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
 			x, y, z + itm_TypeData[itemtype][itm_zModelOffset],
 			rx + itm_TypeData[itemtype][itm_offsetRotX],
 			ry + itm_TypeData[itemtype][itm_offsetRotY],
 			rz + itm_TypeData[itemtype][itm_offsetRotZ],
 			world, interior, .streamdistance = 100.0);
 	} else {
-		itm_Data[itemid][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
+		itm_Data[id][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
 			x, y, z + itm_TypeData[itemtype][itm_zModelOffset], rx, ry, rz,
 			world, interior, .streamdistance = 100.0);
 	}
 
-	itm_Data[itemid][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], "Press ~k~~VEHICLE_ENTER_EXIT~ to pick up", world, interior, 1.0, .testlos = false);
+	itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], "Press ~k~~VEHICLE_ENTER_EXIT~ to pick up", world, interior, 1.0, .testlos = false);
 
-	if(itm_Data[itemid][itm_button] == INVALID_BUTTON_ID) {
+	if(itm_Data[id][itm_button] == INVALID_BUTTON_ID) {
 		err("invalid button ID during CreateItemInWorld",
-			_i("itemid", itemid));
+			_i("itemid", _:id));
 		return -3;
 	}
 
-	itm_ButtonIndex[itm_Data[itemid][itm_button]] = itemid;
+	itm_ButtonIndex[itm_Data[id][itm_button]] = id;
 
 	if(itm_TypeData[itemtype][itm_colour] != -1) {
-		SetDynamicObjectMaterial(itm_Data[itemid][itm_objId], 0, itm_TypeData[itemtype][itm_model], "invalid", "invalid", itm_TypeData[itemtype][itm_colour]);
+		SetDynamicObjectMaterial(itm_Data[id][itm_objId], 0, itm_TypeData[itemtype][itm_model], "invalid", "invalid", itm_TypeData[itemtype][itm_colour]);
 	}
 
 	if(label) {
-		SetButtonLabel(itm_Data[itemid][itm_button], itm_TypeData[itemtype][itm_name], .range = 2.0, .testlos = false);
+		SetButtonLabel(itm_Data[id][itm_button], itm_TypeData[itemtype][itm_name], .range = 2.0, .testlos = false);
 	}
 
-	Iter_Add(itm_WorldIndex, itemid);
+	Iter_Add(itm_WorldIndex, _:id);
 
-	CallLocalFunction("OnItemCreateInWorld", "d", itemid);
+	CallLocalFunction("OnItemCreateInWorld", "d", _:id);
 
 	return 0;
 }
@@ -1890,7 +1897,7 @@ _item_handleDropKeyDown(playerid) {
 		return 2;
 	}
 
-	if(!Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return 3;
 	}
 
@@ -1935,7 +1942,7 @@ _item_handleUseKeyDown(playerid) {
 		return 2;
 	}
 
-	if(!Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return 3;
 	}
 
@@ -1947,7 +1954,7 @@ _item_handleUseKeyUp(playerid) {
 
 	if(itm_Interacting[playerid] == INVALID_ITEM_ID) {
 		if(itm_CurrentButton[playerid] != INVALID_BUTTON_ID) {
-			CallLocalFunction("OnPlayerRelButtonWithItem", "ddd", playerid, itm_CurrentButton[playerid], itm_Holding[playerid]);
+			CallLocalFunction("OnPlayerRelButtonWithItem", "ddd", playerid, _:itm_CurrentButton[playerid], _:itm_Holding[playerid]);
 			itm_CurrentButton[playerid] = INVALID_BUTTON_ID;
 		}
 
@@ -1965,7 +1972,7 @@ _item_handleUseKeyUp(playerid) {
 
 	// If the interval is below 200 it's a tap event, counts as using an item.
 	if(interval < 200) {
-		CallLocalFunction("OnPlayerUseItem", "dd", playerid, itm_Interacting[playerid]);
+		CallLocalFunction("OnPlayerUseItem", "dd", playerid, _:itm_Interacting[playerid]);
 	}
 
 	itm_LongPickupTick[playerid] = 0;
@@ -1975,7 +1982,7 @@ _item_handleUseKeyUp(playerid) {
 }
 
 hook OnPlayerEnterPlayerArea(playerid, targetid) {
-	if(Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		ShowActionText(playerid, "Press N to give item");
 	}
 
@@ -1983,85 +1990,86 @@ hook OnPlayerEnterPlayerArea(playerid, targetid) {
 }
 
 hook OnPlayerLeavePlayerArea(playerid, targetid) {
-	if(Iter_Contains(itm_Index, itm_Holding[playerid])) {
+	if(Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		HideActionText(playerid);
 	}
 
 	return 1;
 }
 
-_item_onPlayerUseItem(playerid, itemid) {
-	new buttonid = GetPlayerButtonID(playerid);
+_item_onPlayerUseItem(playerid, Item:id) {
+	new Button:buttonid;
+	GetPlayerButtonID(playerid, buttonid);
 
-	if(buttonid != -1) {
+	if(IsValidButton(buttonid)) {
 		itm_CurrentButton[playerid] = buttonid;
 
-		if(CallLocalFunction("OnPlayerUseItemWithButton", "ddd", playerid, buttonid, itm_Holding[playerid])) {
+		if(CallLocalFunction("OnPlayerUseItemWithButton", "ddd", playerid, _:buttonid, _:itm_Holding[playerid])) {
 			return 1;
 		}
 	}
 
-	return CallLocalFunction("OnPlayerUseItem", "dd", playerid, itemid);
+	return CallLocalFunction("OnPlayerUseItem", "dd", playerid, _:id);
 }
 
 
-hook OnButtonPress(playerid, buttonid) {
+hook OnButtonPress(playerid, Button:id) {
 	if(itm_Interacting[playerid] != INVALID_ITEM_ID) {
 		return Y_HOOKS_CONTINUE_RETURN_0;
 	}
 
-	if(itm_ButtonIndex[buttonid] == INVALID_ITEM_ID) {
+	if(itm_ButtonIndex[id] == INVALID_ITEM_ID) {
 		return Y_HOOKS_CONTINUE_RETURN_0;
 	}
 
-	if(!Iter_Contains(itm_Index, itm_ButtonIndex[buttonid])) {
+	if(!Iter_Contains(itm_Index, _:itm_ButtonIndex[id])) {
 		return Y_HOOKS_CONTINUE_RETURN_0;
 	}
 
-	new itemid = itm_ButtonIndex[buttonid];
+	new Item:itemID = itm_ButtonIndex[id];
 
-	if(itm_Holder[itemid] != INVALID_PLAYER_ID) {
+	if(itm_Holder[itemID] != INVALID_PLAYER_ID) {
 		return Y_HOOKS_CONTINUE_RETURN_0;
 	}
 
-	if(itm_Interactor[itemid] != INVALID_PLAYER_ID) {
+	if(itm_Interactor[itemID] != INVALID_PLAYER_ID) {
 		return Y_HOOKS_CONTINUE_RETURN_0;
 	}
 
-	if(Iter_Contains(itm_Index, itm_Holding[playerid])) {
-		return CallLocalFunction("OnPlayerUseItemWithItem", "ddd", playerid, itm_Holding[playerid], itemid);
+	if(Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
+		return CallLocalFunction("OnPlayerUseItemWithItem", "ddd", playerid, _:itm_Holding[playerid], _:itemID);
 	}
 
-	if(itm_TypeData[itm_Data[itemid][itm_type]][itm_longPickup]) {
-		_item_doLongPickup(playerid, itemid);
+	if(itm_TypeData[itm_Data[itemID][itm_type]][itm_longPickup]) {
+		_item_doLongPickup(playerid, itemID);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 
-	if(CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, itemid)) {
+	if(CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, _:itemID)) {
 		return Y_HOOKS_BREAK_RETURN_0;
 	}
 
-	PlayerPickUpItem(playerid, itemid);
+	PlayerPickUpItem(playerid, itemID);
 
 	return Y_HOOKS_BREAK_RETURN_1;
 }
 
-_item_doLongPickup(playerid, itemid) {
+_item_doLongPickup(playerid, Item:id) {
 	itm_LongPickupTick[playerid] = GetTickCount();
-	itm_Interacting[playerid] = itemid;
+	itm_Interacting[playerid] = id;
 
 	stop itm_LongPickupTimer[playerid];
-	itm_LongPickupTimer[playerid] = defer _LongPickupItemDelay(playerid, itemid);
+	itm_LongPickupTimer[playerid] = defer _LongPickupItemDelay(playerid, _:id);
 }
 
-timer _LongPickupItemDelay[500](playerid, itemid) {
-	if(CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, itemid)) {
+timer _LongPickupItemDelay[500](playerid, id) {
+	if(CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, id)) {
 		return;
 	}
 
 	itm_LongPickupTick[playerid] = 0;
 	itm_Interacting[playerid] = INVALID_ITEM_ID;
-	PlayerPickUpItem(playerid, itemid);
+	PlayerPickUpItem(playerid, Item:id);
 }
 
 timer PickUpItemDelay[400](playerid, id, animtype) {
@@ -2076,20 +2084,20 @@ timer PickUpItemDelay[400](playerid, id, animtype) {
 		return 1;
 	}
 
-	GiveWorldItemToPlayer(playerid, id, 1);
+	GiveWorldItemToPlayer(playerid, Item:id, 1);
 
 	return 1;
 }
 
 timer DropItemDelay[400](playerid) {
 	new
-		itemid = itm_Holding[playerid],
+		Item:id = itm_Holding[playerid],
 		Float:x,
 		Float:y,
 		Float:z,
 		Float:r;
 
-	if(!Iter_Contains(itm_Index, itemid)) {
+	if(!Iter_Contains(itm_Index, _:id)) {
 		return 1;
 	}
 
@@ -2098,14 +2106,14 @@ timer DropItemDelay[400](playerid) {
 
 	itm_Holding[playerid] = INVALID_ITEM_ID;
 	itm_Interacting[playerid] = INVALID_ITEM_ID;
-	itm_Holder[itemid] = INVALID_PLAYER_ID;
-	itm_Interactor[itemid] = INVALID_PLAYER_ID;
+	itm_Holder[id] = INVALID_PLAYER_ID;
+	itm_Interactor[id] = INVALID_PLAYER_ID;
 
 	GetPlayerPos(playerid, x, y, z);
 	GetPlayerFacingAngle(playerid, r);
 
 	CreateItemInWorld(
-		itemid,
+		id,
 		x + (0.5 * floatsin(-r, degrees)),
 		y + (0.5 * floatcos(-r, degrees)),
 		z - ITEM_FLOOR_OFFSET,
@@ -2119,8 +2127,8 @@ timer DropItemDelay[400](playerid) {
 
 	Streamer_Update(playerid);
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, 0, 0, 0, 0, 0);
-	CallLocalFunction("OnPlayerDroppedItem", "dd", playerid, itemid);
-	CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, itemid);
+	CallLocalFunction("OnPlayerDroppedItem", "dd", playerid, _:id);
+	CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
 
 	return 1;
 }
@@ -2136,21 +2144,21 @@ timer _item_giveItem[500](playerid, targetid) {
 		return;
 	}
 
-	if(Iter_Contains(itm_Index, itm_Holding[targetid])) {
+	if(Iter_Contains(itm_Index, _:itm_Holding[targetid])) {
 		return;
 	}
 
 	new
-		itemid,
+		Item:id,
 		ItemType:type;
 
-	itemid = itm_Holding[playerid];
+	id = itm_Holding[playerid];
 
-	if(itemid == -1) {
+	if(id == INVALID_ITEM_ID) {
 		return;
 	}
 
-	type = itm_Data[itemid][itm_type];
+	type = itm_Data[id][itm_type];
 
 	itm_Holding[playerid] = INVALID_ITEM_ID;
 	itm_Interacting[playerid] = INVALID_ITEM_ID;
@@ -2174,11 +2182,11 @@ timer _item_giveItem[500](playerid, targetid) {
 
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 
-	itm_Holding[targetid] = itemid;
-	itm_Holder[itemid] = targetid;
+	itm_Holding[targetid] = id;
+	itm_Holder[id] = targetid;
 
-	CallLocalFunction("OnPlayerGivenItem", "ddd", playerid, targetid, itemid);
-	CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, itemid);
+	CallLocalFunction("OnPlayerGivenItem", "ddd", playerid, targetid, _:id);
+	CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
 
 	return;
 }

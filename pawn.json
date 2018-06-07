@@ -7,12 +7,13 @@
 		"sampctl/samp-stdlib",
 		"Southclaws/samp-logger",
 		"pawn-lang/YSI-Includes",
-		"ScavengeSurvive/button",
+		"Southclaws/pawn-uuid",
+		"Southclaws/pawn-errors",
+		"ScavengeSurvive/button:^1.8.2",
 		"ScavengeSurvive/mathutil",
 		"ScavengeSurvive/tick-difference",
 		"ScavengeSurvive/action-text",
-		"ScavengeSurvive/personal-space",
-		"Southclaws/pawn-uuid"
+		"ScavengeSurvive/personal-space"
 	],
 	"dev_dependencies": [
 		"ScavengeSurvive/test-boilerplate",
@@ -30,9 +31,12 @@
 		}
 	],
 	"runtime": {
+		"version": "0.3.7",
 		"mode": "y_testing",
 		"plugins": [
 			"samp-incognito/samp-streamer-plugin"
-		]
+		],
+		"rcon_password": "password",
+		"port": 7777
 	}
 }
