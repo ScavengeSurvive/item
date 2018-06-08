@@ -91,6 +91,33 @@
 // Functions
 
 
+forward ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5);
+/*
+# Description
+Defines a new item type with the specified name and model. Item types are the
+fundamental pieces of data that give items specific characteristics. At least
+one item definition must exist or CreateItem will have no data to use.
+
+# Parameters
+- name: The name of the item, that will be displayed on item labels.
+- uname: The unique name of the item to identify the item type via string.
+- model: The GTA:SA model id to use when the item is visible in the game world.
+- size: An arbitrary size value (has no effect in this module).
+- rotx, roty, rotz: The default rotation the item object will have when dropped.
+- modelz: Z offset from the item world position to create item model.
+- attx, atty, attz, attrx, attry, attrz: Player holding attachment coordinates.
+- usecarryanim: When true, player will use a two-handed carry animation.
+- colour: Item model texture colour.
+- boneid: The attachment bone to use, by default this is the right hand (6).
+- longpickup: When true, requires long press to pick up, tap results in using.
+- buttonz: Z offset from the item world position to create item button.
+- maxhitpoints: maximum and default hitpoints for items of this type.
+
+# Returns
+Item Type ID handle of the newly defined item type. INVALID_ITEM_TYPE If the
+item type definition index is full and no more item types can be defined.
+*/
+
 forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1);
 /*
 # Description
@@ -124,31 +151,27 @@ Destroys an item.
 Boolean to indicate success or failure.
 */
 
-forward ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5);
+forward CreateItemInWorld(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1);
 /*
 # Description
-Defines a new item type with the specified name and model. Item types are the
-fundamental pieces of data that give items specific characteristics. At least
-one item definition must exist or CreateItem will have no data to use.
-
-# Parameters
-- name: The name of the item, that will be displayed on item labels.
-- uname: The unique name of the item to identify the item type via string.
-- model: The GTA:SA model id to use when the item is visible in the game world.
-- size: An arbitrary size value (has no effect in this module).
-- rotx, roty, rotz: The default rotation the item object will have when dropped.
-- modelz: Z offset from the item world position to create item model.
-- attx, atty, attz, attrx, attry, attrz: Player holding attachment coordinates.
-- usecarryanim: When true, player will use a two-handed carry animation.
-- colour: Item model texture colour.
-- boneid: The attachment bone to use, by default this is the right hand (6).
-- longpickup: When true, requires long press to pick up, tap results in using.
-- buttonz: Z offset from the item world position to create item button.
-- maxhitpoints: maximum and default hitpoints for items of this type.
+Adds an existing item to the game world if it was previously removed either by
+a player picking it up or via RemoveItemFromWorld.
 
 # Returns
-Item Type ID handle of the newly defined item type. INVALID_ITEM_TYPE If the
-item type definition index is full and no more item types can be defined.
+1 If the item doesn't exist, 2 if the item is already in the world, 3 if the
+item type is invalid, 4 if the button ID was invalid and 0 on success.
+*/
+
+forward RemoveItemFromWorld(Item:id);
+/*
+# Description
+Removes an item from the world. Deletes all physical elements but keeps the item
+in memory with a valid ID and removes the ID from the world index. Effectively
+makes the item a "virtual" item, as in it still exists in the server memory but
+it doesn't exist physically in the game world.
+
+# Returns
+Boolean to indicate success or failure.
 */
 
 forward PlayerPickUpItem(playerid, Item:id);
@@ -205,18 +228,6 @@ Removes the player's currently held item and places it in the world.
 
 # Returns
 INVALID_ITEM_ID If the player ID is invalid or the player isn't holding an item.
-*/
-
-forward RemoveItemFromWorld(Item:id);
-/*
-# Description
-Removes an item from the world. Deletes all physical elements but keeps the item
-in memory with a valid ID and removes the ID from the world index. Effectively
-makes the item a "virtual" item, as in it still exists in the server memory but
-it doesn't exist physically in the game world.
-
-# Returns
-Boolean to indicate success or failure.
 */
 
 forward AllocNextItemID(ItemType:type, uuid[] = "");
@@ -836,6 +847,55 @@ hook OnPlayerDisconnect(playerid, reason) {
 ==============================================================================*/
 
 
+stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5) {
+	new ItemType:id = ItemType:itm_TypeTotal;
+
+	if(id == MAX_ITEM_TYPE) {
+		fatal("MAX_ITEM_TYPE limit reached");
+		return INVALID_ITEM_TYPE;
+	}
+
+	// Check if any other items have this uname
+	for(new i = _:id - 1; i >= 0; i--) {
+		if(!strcmp(uname, itm_TypeData[ItemType:i][itm_uname], true)) {
+			err("attempt to define two item types with the same unique name",
+				_s("uname", uname));
+			return INVALID_ITEM_TYPE;
+		}
+	}
+
+	itm_TypeTotal++;
+
+	format(itm_TypeData[id][itm_name], MAX_ITEM_NAME, name);
+	format(itm_TypeData[id][itm_uname], MAX_ITEM_NAME, uname);
+	itm_TypeData[id][itm_model]			= model;
+	itm_TypeData[id][itm_size]			= size;
+
+	itm_TypeData[id][itm_offsetRotX]	= rotx;
+	itm_TypeData[id][itm_offsetRotY]	= roty;
+	itm_TypeData[id][itm_offsetRotZ]	= rotz;
+	itm_TypeData[id][itm_zModelOffset]	= modelz;
+	itm_TypeData[id][itm_zButtonOffset]	= buttonz;
+
+	itm_TypeData[id][itm_attachPosX]	= attx;
+	itm_TypeData[id][itm_attachPosY]	= atty;
+	itm_TypeData[id][itm_attachPosZ]	= attz;
+
+	itm_TypeData[id][itm_attachRotX]	= attrx;
+	itm_TypeData[id][itm_attachRotY]	= attry;
+	itm_TypeData[id][itm_attachRotZ]	= attrz;
+	itm_TypeData[id][itm_useCarryAnim]	= usecarryanim;
+
+	itm_TypeData[id][itm_colour]		= colour;
+	itm_TypeData[id][itm_attachBone]	= boneid;
+	itm_TypeData[id][itm_longPickup]	= longpickup;
+	itm_TypeData[id][itm_maxHitPoints]	= maxhitpoints;
+
+	CallLocalFunction("OnItemTypeDefined", "s", uname);
+
+	return id;
+}
+
 stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1) {
 	new Item:id = Item:Iter_Free(itm_Index);
 
@@ -928,53 +988,115 @@ stock DestroyItem(Item:id, &indexid = -1, &worldindexid = -1) {
 	return 0;
 }
 
-stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5) {
-	new ItemType:id = ItemType:itm_TypeTotal;
-
-	if(id == MAX_ITEM_TYPE) {
-		fatal("MAX_ITEM_TYPE limit reached");
-		return INVALID_ITEM_TYPE;
+stock CreateItemInWorld(
+	Item:id,
+	Float:x = 0.0, Float:y = 0.0, Float:z = 0.0,
+	Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0,
+	world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1
+) {
+	if(!Iter_Contains(itm_Index, _:id)) {
+		return 1;
 	}
 
-	// Check if any other items have this uname
-	for(new i = _:id - 1; i >= 0; i--) {
-		if(!strcmp(uname, itm_TypeData[ItemType:i][itm_uname], true)) {
-			err("attempt to define two item types with the same unique name",
-				_s("uname", uname));
-			return INVALID_ITEM_TYPE;
-		}
+	if(Iter_Contains(itm_WorldIndex, _:id)) {
+		return 2;
 	}
 
-	itm_TypeTotal++;
+	new ItemType:itemtype = itm_Data[id][itm_type];
 
-	format(itm_TypeData[id][itm_name], MAX_ITEM_NAME, name);
-	format(itm_TypeData[id][itm_uname], MAX_ITEM_NAME, uname);
-	itm_TypeData[id][itm_model]			= model;
-	itm_TypeData[id][itm_size]			= size;
+	if(!IsValidItemType(itemtype)) {
+		return 3;
+	}
 
-	itm_TypeData[id][itm_offsetRotX]	= rotx;
-	itm_TypeData[id][itm_offsetRotY]	= roty;
-	itm_TypeData[id][itm_offsetRotZ]	= rotz;
-	itm_TypeData[id][itm_zModelOffset]	= modelz;
-	itm_TypeData[id][itm_zButtonOffset]	= buttonz;
+	itm_Data[id][itm_posX] = x;
+	itm_Data[id][itm_posY] = y;
+	itm_Data[id][itm_posZ] = z;
+	itm_Data[id][itm_rotX] = rx;
+	itm_Data[id][itm_rotY] = ry;
+	itm_Data[id][itm_rotZ] = rz;
+	itm_Data[id][itm_world] = world;
+	itm_Data[id][itm_interior] = interior;
+	itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
 
-	itm_TypeData[id][itm_attachPosX]	= attx;
-	itm_TypeData[id][itm_attachPosY]	= atty;
-	itm_TypeData[id][itm_attachPosZ]	= attz;
+	if(itm_Holder[id] != INVALID_PLAYER_ID) {
+		RemovePlayerAttachedObject(itm_Holder[id], ITEM_ATTACH_INDEX);
+		SetPlayerSpecialAction(itm_Holder[id], SPECIAL_ACTION_NONE);
 
-	itm_TypeData[id][itm_attachRotX]	= attrx;
-	itm_TypeData[id][itm_attachRotY]	= attry;
-	itm_TypeData[id][itm_attachRotZ]	= attrz;
-	itm_TypeData[id][itm_useCarryAnim]	= usecarryanim;
+		itm_Holding[itm_Holder[id]] = INVALID_ITEM_ID;
+		itm_Interacting[itm_Holder[id]] = INVALID_ITEM_ID;
+	}
 
-	itm_TypeData[id][itm_colour]		= colour;
-	itm_TypeData[id][itm_attachBone]	= boneid;
-	itm_TypeData[id][itm_longPickup]	= longpickup;
-	itm_TypeData[id][itm_maxHitPoints]	= maxhitpoints;
+	itm_Interactor[id] = INVALID_PLAYER_ID;
+	itm_Holder[id] = INVALID_PLAYER_ID;
 
-	CallLocalFunction("OnItemTypeDefined", "s", uname);
+	if(applyrotoffsets) {
+		itm_Data[id][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
+			x, y, z + itm_TypeData[itemtype][itm_zModelOffset],
+			rx + itm_TypeData[itemtype][itm_offsetRotX],
+			ry + itm_TypeData[itemtype][itm_offsetRotY],
+			rz + itm_TypeData[itemtype][itm_offsetRotZ],
+			world, interior, .streamdistance = 100.0);
+	} else {
+		itm_Data[id][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
+			x, y, z + itm_TypeData[itemtype][itm_zModelOffset], rx, ry, rz,
+			world, interior, .streamdistance = 100.0);
+	}
 
-	return id;
+	itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], "Press ~k~~VEHICLE_ENTER_EXIT~ to pick up", world, interior, 1.0, .testlos = false);
+
+	if(itm_Data[id][itm_button] == INVALID_BUTTON_ID) {
+		err("invalid button ID during CreateItemInWorld",
+			_i("itemid", _:id));
+		return 4;
+	}
+
+	itm_ButtonIndex[itm_Data[id][itm_button]] = id;
+
+	if(itm_TypeData[itemtype][itm_colour] != -1) {
+		SetDynamicObjectMaterial(itm_Data[id][itm_objId], 0, itm_TypeData[itemtype][itm_model], "invalid", "invalid", itm_TypeData[itemtype][itm_colour]);
+	}
+
+	if(label) {
+		SetButtonLabel(itm_Data[id][itm_button], itm_TypeData[itemtype][itm_name], .range = 2.0, .testlos = false);
+	}
+
+	Iter_Add(itm_WorldIndex, _:id);
+
+	CallLocalFunction("OnItemCreateInWorld", "d", _:id);
+
+	return 0;
+}
+
+stock RemoveItemFromWorld(Item:id) {
+	if(!Iter_Contains(itm_Index, _:id)) {
+		return 1;
+	}
+
+	if(!Iter_Contains(itm_WorldIndex, _:id)) {
+		return 2;
+	}
+
+	if(itm_Holder[id] != INVALID_PLAYER_ID) {
+		err("RemoveItemFromWorld unexpected state player was holding item that was in-world.",
+			_i("playerid", itm_Holder[id]),
+			_i("itemid", _:id));
+
+		RemoveCurrentItem(itm_Holder[id]);
+	}
+
+	DestroyDynamicObject(itm_Data[id][itm_objId]);
+
+	DestroyButton(itm_Data[id][itm_button]);
+
+	itm_ButtonIndex[itm_Data[id][itm_button]] = INVALID_ITEM_ID;
+	itm_Data[id][itm_objId] = -1;
+	itm_Data[id][itm_button] = INVALID_BUTTON_ID;
+
+	Iter_Remove(itm_WorldIndex, _:id);
+
+	CallRemoteFunction("OnItemRemoveFromWorld", "d", _:id);
+
+	return 0;
 }
 
 stock PlayerPickUpItem(playerid, Item:id) {
@@ -1166,38 +1288,6 @@ stock Item:RemoveCurrentItem(playerid) {
 
 	return id;
 
-}
-
-stock RemoveItemFromWorld(Item:id) {
-	if(!Iter_Contains(itm_Index, _:id)) {
-		return 1;
-	}
-
-	if(!Iter_Contains(itm_WorldIndex, _:id)) {
-		return 2;
-	}
-
-	if(itm_Holder[id] != INVALID_PLAYER_ID) {
-		err("RemoveItemFromWorld unexpected state player was holding item that was in-world.",
-			_i("playerid", itm_Holder[id]),
-			_i("itemid", _:id));
-
-		RemoveCurrentItem(itm_Holder[id]);
-	}
-
-	DestroyDynamicObject(itm_Data[id][itm_objId]);
-
-	DestroyButton(itm_Data[id][itm_button]);
-
-	itm_ButtonIndex[itm_Data[id][itm_button]] = INVALID_ITEM_ID;
-	itm_Data[id][itm_objId] = -1;
-	itm_Data[id][itm_button] = INVALID_BUTTON_ID;
-
-	Iter_Remove(itm_WorldIndex, _:id);
-
-	CallRemoteFunction("OnItemRemoveFromWorld", "d", _:id);
-
-	return 0;
 }
 
 stock AllocNextItemID(ItemType:type, uuid[] = "") {
@@ -1783,85 +1873,6 @@ stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], m
 
 ==============================================================================*/
 
-
-CreateItemInWorld(
-	Item:id,
-	Float:x = 0.0, Float:y = 0.0, Float:z = 0.0,
-	Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0,
-	world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1
-) {
-	if(!Iter_Contains(itm_Index, _:id)) {
-		return 1;
-	}
-
-	if(Iter_Contains(itm_WorldIndex, _:id)) {
-		return 2;
-	}
-
-	new ItemType:itemtype = itm_Data[id][itm_type];
-
-	if(!IsValidItemType(itemtype)) {
-		return 3;
-	}
-
-	itm_Data[id][itm_posX] = x;
-	itm_Data[id][itm_posY] = y;
-	itm_Data[id][itm_posZ] = z;
-	itm_Data[id][itm_rotX] = rx;
-	itm_Data[id][itm_rotY] = ry;
-	itm_Data[id][itm_rotZ] = rz;
-	itm_Data[id][itm_world] = world;
-	itm_Data[id][itm_interior] = interior;
-	itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
-
-	if(itm_Holder[id] != INVALID_PLAYER_ID) {
-		RemovePlayerAttachedObject(itm_Holder[id], ITEM_ATTACH_INDEX);
-		SetPlayerSpecialAction(itm_Holder[id], SPECIAL_ACTION_NONE);
-
-		itm_Holding[itm_Holder[id]] = INVALID_ITEM_ID;
-		itm_Interacting[itm_Holder[id]] = INVALID_ITEM_ID;
-	}
-
-	itm_Interactor[id] = INVALID_PLAYER_ID;
-	itm_Holder[id] = INVALID_PLAYER_ID;
-
-	if(applyrotoffsets) {
-		itm_Data[id][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
-			x, y, z + itm_TypeData[itemtype][itm_zModelOffset],
-			rx + itm_TypeData[itemtype][itm_offsetRotX],
-			ry + itm_TypeData[itemtype][itm_offsetRotY],
-			rz + itm_TypeData[itemtype][itm_offsetRotZ],
-			world, interior, .streamdistance = 100.0);
-	} else {
-		itm_Data[id][itm_objId] = CreateDynamicObject(itm_TypeData[itemtype][itm_model],
-			x, y, z + itm_TypeData[itemtype][itm_zModelOffset], rx, ry, rz,
-			world, interior, .streamdistance = 100.0);
-	}
-
-	itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], "Press ~k~~VEHICLE_ENTER_EXIT~ to pick up", world, interior, 1.0, .testlos = false);
-
-	if(itm_Data[id][itm_button] == INVALID_BUTTON_ID) {
-		err("invalid button ID during CreateItemInWorld",
-			_i("itemid", _:id));
-		return -3;
-	}
-
-	itm_ButtonIndex[itm_Data[id][itm_button]] = id;
-
-	if(itm_TypeData[itemtype][itm_colour] != -1) {
-		SetDynamicObjectMaterial(itm_Data[id][itm_objId], 0, itm_TypeData[itemtype][itm_model], "invalid", "invalid", itm_TypeData[itemtype][itm_colour]);
-	}
-
-	if(label) {
-		SetButtonLabel(itm_Data[id][itm_button], itm_TypeData[itemtype][itm_name], .range = 2.0, .testlos = false);
-	}
-
-	Iter_Add(itm_WorldIndex, _:id);
-
-	CallLocalFunction("OnItemCreateInWorld", "d", _:id);
-
-	return 0;
-}
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(playerid) == PLAYER_STATE_SPECTATING) {
