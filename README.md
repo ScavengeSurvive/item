@@ -200,8 +200,38 @@ an item is removed from the world regardless of how it happened.
 
 #### `OnPlayerPickUpItem` and `OnPlayerPickedUpItem`
 
-This is a tense-pair of events that are called as a player picks up an item from
-the game world.
+This is a pair of events that are called as a player picks up an item from the
+game world. In this case, `OnPlayerPickUpItem` can return 1 in order to cancel
+the action. This simple attribute is powerful and enables some interesting
+features to be build around it.
+
+For example, your items may be faction-locked, so only members of a specific
+faction can use certain items. You could use:
+
+```pawn
+hook OnPlayerPickUpItem(playerid, Item:itemid) {
+  if(GetPlayerFaction(playerid) != GetItemFaction(itemid)) {
+    SendClientMessage(playerid, 0xFFFFFFFF, "You are unable to pick up that item because you are in the wrong faction.");
+    return Y_HOOKS_BREAK_RETURN_1;
+  };
+  return Y_HOOKS_CONTINUE_RETURN_0;
+}
+```
+
+(Here, `GetPlayerFaction` and `GetItemFaction` are example functions)
+
+This snippet of code makes use of y_hooks and return codes. The first return
+code here is a hook-chain break and will prevent the remaining hooks of
+`OnPlayerPickUpItem` from being called and return `1` to the call site. This
+returning of `1` cancels the pick-up animation and blocks the player from being
+able to pick up the item.
+
+Another use of this callback in the Scavenge and Survive gamemode is items that
+can only be modified or picked up using a specific tool. So for example, some
+kind of machine that is obviously too large to carry can be disassembled using a
+tool. This makes use of returning `1` on `OnPlayerPickUpItem` to prevent the
+player from being able to pick up the large item. This is also an example of
+items being used for objects that are too large to be held.
 
 ### Extensibility Patterns
 
