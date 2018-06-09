@@ -511,7 +511,7 @@ Returns the ID of the player who is holding an item.
 INVALID_PLAYER_ID if the item isn't being held by anyone.
 */
 
-forward GetPlayerItem(playerid);
+forward Item:GetPlayerItem(playerid);
 /*
 # Description
 Returns the item ID handle of the item a player is holding.
@@ -1762,7 +1762,7 @@ stock GetItemHolder(Item:id) {
 }
 
 // itm_Holding
-stock GetPlayerItem(playerid) {
+stock Item:GetPlayerItem(playerid) {
 	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return INVALID_ITEM_ID;
 	}
