@@ -547,7 +547,7 @@ text assigned to the item to the end.
 Boolean to indicate success or failure.
 */
 
-forward GetPlayerInteractingItem(playerid);
+forward Item:GetPlayerInteractingItem(playerid);
 /*
 # Description
 Returns the ID handle of the item that <playerid> is interacting with. This
@@ -1810,7 +1810,7 @@ stock GetItemName(Item:id, string[]) {
 	return 0;
 }
 
-stock GetPlayerInteractingItem(playerid) {
+stock Item:GetPlayerInteractingItem(playerid) {
 	if(!IsPlayerConnected(playerid)) {
 		return INVALID_ITEM_ID;
 	}
