@@ -1799,7 +1799,7 @@ stock GetItemName(Item:id, string[]) {
 	string[0] = EOS;
 	strcat(string, itm_TypeData[itm_Data[id][itm_type]][itm_name], MAX_ITEM_NAME + MAX_ITEM_TEXT);
 
-	CallLocalFunction("OnItemNameRender", "dd", id, _:itm_Data[id][itm_type]);
+	CallLocalFunction("OnItemNameRender", "dd", _:id, _:itm_Data[id][itm_type]);
 
 	if(!isnull(itm_Data[id][itm_nameEx])) {
 		strcat(string, " (", MAX_ITEM_NAME + MAX_ITEM_TEXT);
