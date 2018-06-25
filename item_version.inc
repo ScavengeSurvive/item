@@ -4,4 +4,4 @@
 
 #define ITEM_VERSION_MAJOR (1)
 #define ITEM_VERSION_MINOR (10)
-#define ITEM_VERSION_PATCH (0)
+#define ITEM_VERSION_PATCH (4)

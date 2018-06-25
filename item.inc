@@ -511,7 +511,7 @@ Returns the ID of the player who is holding an item.
 INVALID_PLAYER_ID if the item isn't being held by anyone.
 */
 
-forward GetPlayerItem(playerid);
+forward Item:GetPlayerItem(playerid);
 /*
 # Description
 Returns the item ID handle of the item a player is holding.
@@ -547,7 +547,7 @@ text assigned to the item to the end.
 Boolean to indicate success or failure.
 */
 
-forward GetPlayerInteractingItem(playerid);
+forward Item:GetPlayerInteractingItem(playerid);
 /*
 # Description
 Returns the ID handle of the item that <playerid> is interacting with. This
@@ -1762,7 +1762,7 @@ stock GetItemHolder(Item:id) {
 }
 
 // itm_Holding
-stock GetPlayerItem(playerid) {
+stock Item:GetPlayerItem(playerid) {
 	if(!Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
 		return INVALID_ITEM_ID;
 	}
@@ -1799,7 +1799,7 @@ stock GetItemName(Item:id, string[]) {
 	string[0] = EOS;
 	strcat(string, itm_TypeData[itm_Data[id][itm_type]][itm_name], MAX_ITEM_NAME + MAX_ITEM_TEXT);
 
-	CallLocalFunction("OnItemNameRender", "dd", id, _:itm_Data[id][itm_type]);
+	CallLocalFunction("OnItemNameRender", "dd", _:id, _:itm_Data[id][itm_type]);
 
 	if(!isnull(itm_Data[id][itm_nameEx])) {
 		strcat(string, " (", MAX_ITEM_NAME + MAX_ITEM_TEXT);
@@ -1810,7 +1810,7 @@ stock GetItemName(Item:id, string[]) {
 	return 0;
 }
 
-stock GetPlayerInteractingItem(playerid) {
+stock Item:GetPlayerInteractingItem(playerid) {
 	if(!IsPlayerConnected(playerid)) {
 		return INVALID_ITEM_ID;
 	}
