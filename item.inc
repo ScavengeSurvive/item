@@ -554,7 +554,7 @@ Returns the ID handle of the item that <playerid> is interacting with. This
 means either picking up, dropping or giving.
 */
 
-forward GetPlayerNearbyItems(playerid, list[]);
+forward GetPlayerNearbyItems(playerid, Item:list[]);
 /*
 # Description:
 Stores a list of items the player is within interaction range of into <list>.
@@ -1818,16 +1818,16 @@ stock Item:GetPlayerInteractingItem(playerid) {
     return itm_Interacting[playerid];
 }
 
-stock GetPlayerNearbyItems(playerid, list[]) {
+stock GetPlayerNearbyItems(playerid, Item:list[]) {
     new
-        buttons[BTN_MAX_INRANGE],
+        Button:buttons[BTN_MAX_INRANGE],
         buttoncount,
         itemcount;
 
     GetPlayerButtonList(playerid, buttons, buttoncount, true);
 
     for(new i; i < buttoncount; ++i) {
-        if(Iter_Contains(itm_Index, itm_ButtonIndex[buttons[i]])) {
+        if(Iter_Contains(itm_Index, _:itm_ButtonIndex[buttons[i]])) {
             list[itemcount++] = itm_ButtonIndex[buttons[i]];
         }
     }
