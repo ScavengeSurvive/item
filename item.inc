@@ -12,8 +12,8 @@
 #include <a_samp>
 #include <logger>
 #include <errors>
-#include <YSI\y_iterate>
-#include <YSI\y_timers>
+#include <YSI_Coding\y_iterate>
+#include <YSI_Coding\y_timers>
 #include <streamer>
 #include <uuid>
 #include <button>
@@ -22,7 +22,7 @@
 #include <action-text>
 #include <personal-space>
 
-#include <YSI\y_hooks>
+#include <YSI_Coding\y_hooks>
 
 
 /*==============================================================================
@@ -91,7 +91,7 @@
 // Functions
 
 
-forward ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5);
+forward ItemType:DefineItemType(const name[], const uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5);
 /*
 # Description
 Defines a new item type with the specified name and model. Item types are the
@@ -118,7 +118,7 @@ Item Type ID handle of the newly defined item type. INVALID_ITEM_TYPE If the
 item type definition index is full and no more item types can be defined.
 */
 
-forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1);
+forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1);
 /*
 # Description
 Creates an item in the game world at the specified coordinates with the
@@ -230,7 +230,7 @@ Removes the player's currently held item and places it in the world.
 INVALID_ITEM_ID If the player ID is invalid or the player isn't holding an item.
 */
 
-forward AllocNextItemID(ItemType:type, uuid[] = "");
+forward Item:AllocNextItemID(ItemType:type, const uuid[] = "");
 /*
 # Description
 Preallocates an item ID for a specific item type. This doesn't actually create
@@ -274,7 +274,7 @@ forward GetItemButtonID(Item:id, &Button:buttonid);
 Returns the button ID of a world item. Cannot be a virtual item.
 */
 
-forward SetItemLabel(Item:id, text[], colour = 0xFFFF00FF, Float:range = 10.0);
+forward SetItemLabel(Item:id, const text[], colour = 0xFFFF00FF, Float:range = 10.0);
 /*
 # Description
 Creates or updates a 3D text label above the item. This is actually the label
@@ -396,7 +396,7 @@ forward GetItemExtraData(Item:id, &data);
 Retrieves the integer assigned to the item set with SetItemExtraData.
 */
 
-forward SetItemNameExtra(Item:id, string[]);
+forward SetItemNameExtra(Item:id, const string[]);
 /*
 # Description
 Gives the item a unique string of text to be appended to the name in brackets.
@@ -528,7 +528,7 @@ exists at all (in other words, the function returning false gives no indication
 of whether or not the item is not in the world or just doesn't exist)
 */
 
-forward GetItemFromButtonID(buttonid);
+forward Item:GetItemFromButtonID(Button:buttonid);
 /*
 # Description
 Returns the item ID associated with the specified button ID (if any).
@@ -567,7 +567,7 @@ Returns the next item ID in the index that is unused. Useful for determining
 what ID an item will have before calling CreateItem and thus OnItemCreated.
 */
 
-forward GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], maxitems = sizeof(items));
+forward GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, Item:items[], maxitems = sizeof(items));
 /*
 # Description:
 Returns a list of items in range of the specified point. Uses streamer cells so
@@ -786,9 +786,10 @@ static
     itm_Interactor[MAX_ITEM],
     itm_Holder[MAX_ITEM];
 
+const ITEM_ITER_SIZE = _:MAX_ITEM;
 new
-    Iterator:itm_Index<_:MAX_ITEM>,
-    Iterator:itm_WorldIndex<_:MAX_ITEM>,
+    Iterator:itm_Index<ITEM_ITER_SIZE>,
+    Iterator:itm_WorldIndex<ITEM_ITER_SIZE>,
     Item:itm_ButtonIndex[BTN_MAX];
 
 static
@@ -847,19 +848,19 @@ hook OnPlayerDisconnect(playerid, reason) {
 ==============================================================================*/
 
 
-stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5) {
+stock ItemType:DefineItemType(const name[], const uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5) {
     new ItemType:id = ItemType:itm_TypeTotal;
 
     if(id == MAX_ITEM_TYPE) {
-        fatal("MAX_ITEM_TYPE limit reached");
+        Logger_Fatal("MAX_ITEM_TYPE limit reached");
         return INVALID_ITEM_TYPE;
     }
 
     // Check if any other items have this uname
     for(new i = _:id - 1; i >= 0; i--) {
         if(!strcmp(uname, itm_TypeData[ItemType:i][itm_uname], true)) {
-            err("attempt to define two item types with the same unique name",
-                _s("uname", uname));
+            Logger_Err("attempt to define two item types with the same unique name",
+                Logger_S("uname", uname));
             return INVALID_ITEM_TYPE;
         }
     }
@@ -896,17 +897,17 @@ stock ItemType:DefineItemType(name[], uname[], model, size, Float:rotx = 0.0, Fl
     return id;
 }
 
-stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, uuid[] = "", hitpoints = -1) {
+stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1) {
     new Item:id = Item:Iter_Free(itm_Index);
 
     if(_:id == ITER_NONE) {
-        err("MAX_ITEM limit reached");
+        Logger_Err("MAX_ITEM limit reached");
         return INVALID_ITEM_ID;
     }
 
     if(!IsValidItemType(type)) {
-        err("Item creation with undefined typeid failed.",
-            _i("type", _:type));
+        Logger_Err("Item creation with undefined typeid failed.",
+            Logger_I("type", _:type));
         return INVALID_ITEM_ID;
     }
 
@@ -1045,8 +1046,8 @@ stock CreateItemInWorld(
     itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], "Press ~k~~VEHICLE_ENTER_EXIT~ to pick up", world, interior, 1.0, .testlos = false);
 
     if(itm_Data[id][itm_button] == INVALID_BUTTON_ID) {
-        err("invalid button ID during CreateItemInWorld",
-            _i("itemid", _:id));
+        Logger_Err("invalid button ID during CreateItemInWorld",
+            Logger_I("itemid", _:id));
         return 4;
     }
 
@@ -1077,9 +1078,9 @@ stock RemoveItemFromWorld(Item:id) {
     }
 
     if(itm_Holder[id] != INVALID_PLAYER_ID) {
-        err("RemoveItemFromWorld unexpected state player was holding item that was in-world.",
-            _i("playerid", itm_Holder[id]),
-            _i("itemid", _:id));
+        Logger_Err("RemoveItemFromWorld unexpected state player was holding item that was in-world.",
+            Logger_I("playerid", itm_Holder[id]),
+            Logger_I("itemid", _:id));
 
         RemoveCurrentItem(itm_Holder[id]);
     }
@@ -1290,22 +1291,22 @@ stock Item:RemoveCurrentItem(playerid) {
 
 }
 
-stock AllocNextItemID(ItemType:type, uuid[] = "") {
-    new Item:id = Iter_Free(itm_Index);
+stock Item:AllocNextItemID(ItemType:type, const uuid[] = "") {
+    new Item:id = Item:Iter_Free(itm_Index);
 
-    if(id == ITER_NONE) {
-        err("MAX_ITEM limit reached");
+    if(_:id == ITER_NONE) {
+        Logger_Err("MAX_ITEM limit reached");
         return INVALID_ITEM_ID;
     }
 
     if(!IsValidItemType(type)) {
-        err("Item creation with undefined typeid failed.",
-            _i("type", _:type));
+        Logger_Err("Item creation with undefined typeid failed.",
+            Logger_I("type", _:type));
         return INVALID_ITEM_ID;
     }
 
     itm_Data[id][itm_type] = type;
-    Iter_Add(itm_Index, id);
+    Iter_Add(itm_Index, _:id);
 
     if(uuid[0] == EOS) {
         UUID(itm_Data[id][itm_uuid]);
@@ -1324,7 +1325,7 @@ stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
 
     itm_TypeCount[itm_Data[id][itm_type]]++;
 
-    CallLocalFunction("OnItemCreate", "d", id);
+    CallLocalFunction("OnItemCreate", "d", _:id);
 
     if(!Iter_Contains(itm_Index, _:id)) {
         return 2;
@@ -1340,7 +1341,7 @@ stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
         CreateItemInWorld(id, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints);
     }
 
-    CallLocalFunction("OnItemCreated", "d", id);
+    CallLocalFunction("OnItemCreated", "d", _:id);
 
     return 0;
 }
@@ -1381,7 +1382,7 @@ stock GetItemButtonID(Item:id, &Button:buttonid) {
     return 0;
 }
 
-stock SetItemLabel(Item:id, text[], colour = 0xFFFF00FF, Float:range = 10.0) {
+stock SetItemLabel(Item:id, const text[], colour = 0xFFFF00FF, Float:range = 10.0) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
@@ -1543,7 +1544,7 @@ stock SetItemHitPoints(Item:id, hitpoints) {
 
     itm_Data[id][itm_hitPoints] = hitpoints;
 
-    CallLocalFunction("OnItemHitPointsUpdate", "ddd", id, old, hitpoints);
+    CallLocalFunction("OnItemHitPointsUpdate", "ddd", _:id, old, hitpoints);
 
     if(itm_Data[id][itm_hitPoints] <= 0) {
         DestroyItem(id);
@@ -1582,7 +1583,7 @@ stock GetItemExtraData(Item:id, &data) {
 }
 
 // itm_nameEx
-stock SetItemNameExtra(Item:id, string[]) {
+stock SetItemNameExtra(Item:id, const string[]) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
@@ -1783,7 +1784,7 @@ stock bool:IsItemInWorld(Item:id) {
 }
 
 // itm_ButtonIndex
-stock GetItemFromButtonID(buttonid) {
+stock Item:GetItemFromButtonID(Button:buttonid) {
     if(!IsValidButton(buttonid)) {
         return INVALID_ITEM_ID;
     }
@@ -1839,12 +1840,12 @@ stock Item:GetNextItemID() {
     return Item:Iter_Free(itm_Index);
 }
 
-stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], maxitems = sizeof(items)) {
+stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, Item:items[], maxitems = sizeof(items)) {
     new
         streamer_items[256],
         streamer_count,
         data[2],
-        id,
+        Item:id,
         count;
 
     streamer_count = Streamer_GetNearbyItems(x, y, z, STREAMER_TYPE_AREA, streamer_items, .range = range);
@@ -1856,7 +1857,7 @@ stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], m
             continue;
         }
 
-        id = GetItemFromButtonID(data[1]);
+        id = GetItemFromButtonID(Button:data[1]);
 
         if(IsValidItem(id)) {
             items[count++] = id;
