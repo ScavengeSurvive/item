@@ -438,7 +438,7 @@ Gets the unique name for an item type.
 Boolean to indicate success or failure.
 */
 
-forward ItemType:GetItemTypeFromUniqueName(string[], bool:ignorecase = false);
+forward ItemType:GetItemTypeFromUniqueName(const string[], bool:ignorecase = false);
 /*
 # Description
 Returns an item type for the specified unique item type name via lookup.
@@ -1606,7 +1606,7 @@ stock GetItemNameExtra(Item:id, string[]) {
 }
 
 // itm_uuid
-stock GetItemUUID(id, string[]) {
+stock GetItemUUID(Item:id, string[]) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
@@ -1649,7 +1649,7 @@ stock GetItemTypeUniqueName(ItemType:itemtype, string[]) {
     return 0;
 }
 
-stock ItemType:GetItemTypeFromUniqueName(string[], bool:ignorecase = false) {
+stock ItemType:GetItemTypeFromUniqueName(const string[], bool:ignorecase = false) {
     if(isnull(string)) {
         return INVALID_ITEM_TYPE;
     }
