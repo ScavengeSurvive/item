@@ -7,7 +7,7 @@
 		"sampctl/samp-stdlib",
 		"Southclaws/samp-logger",
 		"pawn-lang/YSI-Includes",
-		"Southclaws/pawn-uuid",
+		"Southclaws/pawn-uuid:1.0.1",
 		"Southclaws/pawn-errors",
 		"ScavengeSurvive/button",
 		"ScavengeSurvive/mathutil",
