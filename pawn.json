@@ -13,7 +13,7 @@
 		"ScavengeSurvive/mathutil",
 		"ScavengeSurvive/tick-difference",
 		"ScavengeSurvive/action-text",
-		"ScavengeSurvive/personal-space0"
+		"ScavengeSurvive/personal-space"
 	],
 	"dev_dependencies": [
 		"ScavengeSurvive/test-boilerplate",
