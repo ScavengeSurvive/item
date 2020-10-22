@@ -5,15 +5,15 @@
 	"output": "test.amx",
 	"dependencies": [
 		"sampctl/samp-stdlib",
-		"Southclaws/samp-logger:^1.0.0",
+		"Southclaws/samp-logger",
 		"pawn-lang/YSI-Includes",
-		"Southclaws/pawn-uuid:1.0.0",
-		"Southclaws/pawn-errors:^1.0.0",
-		"ScavengeSurvive/button:^1.8.2",
-		"ScavengeSurvive/mathutil:^1.0.0",
-		"ScavengeSurvive/tick-difference:^1.0.0",
-		"ScavengeSurvive/action-text:^1.0.0",
-		"ScavengeSurvive/personal-space:^0.1.0"
+		"Southclaws/pawn-uuid",
+		"Southclaws/pawn-errors",
+		"ScavengeSurvive/button",
+		"ScavengeSurvive/mathutil",
+		"ScavengeSurvive/tick-difference",
+		"ScavengeSurvive/action-text",
+		"ScavengeSurvive/personal-space0"
 	],
 	"dev_dependencies": [
 		"ScavengeSurvive/test-boilerplate",
