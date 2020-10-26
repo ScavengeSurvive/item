@@ -922,6 +922,7 @@ stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
     }
 
     itm_Data[id][itm_type] = type;
+    itm_Data[id][itm_nameEx][0] = EOS;
     itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
     itm_TypeCount[type]++;
 
