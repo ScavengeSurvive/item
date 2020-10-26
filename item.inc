@@ -2012,9 +2012,9 @@ hook OnPlayerLeavePlayerArea(playerid, targetid) {
 
 _item_onPlayerUseItem(playerid, Item:id) {
     new Button:buttonid;
-    GetPlayerButtonID(playerid, buttonid);
+    new ret = GetPlayerButtonID(playerid, buttonid);
 
-    if(IsValidButton(buttonid)) {
+    if(!ret && IsValidButton(buttonid)) {
         itm_CurrentButton[playerid] = buttonid;
 
         if(CallLocalFunction("OnPlayerUseItemWithButton", "ddd", playerid, _:buttonid, _:itm_Holding[playerid])) {
