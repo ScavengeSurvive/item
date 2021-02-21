@@ -3,5 +3,5 @@
 // To update the version number for a new release, run "sampctl package release"
 
 #define ITEM_VERSION_MAJOR (1)
-#define ITEM_VERSION_MINOR (11)
-#define ITEM_VERSION_PATCH (0)
+#define ITEM_VERSION_MINOR (10)
+#define ITEM_VERSION_PATCH (5)
