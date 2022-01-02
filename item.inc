@@ -1922,16 +1922,16 @@ _item_handleDropKeyDown(playerid) {
     totalPlayers = GetPlayersNextToPlayer(playerid, players);
 
     for(new i; i < totalPlayers; ++i) {
-        if(itm_Holding[i] != INVALID_ITEM_ID)
+        if(itm_Holding[players[i]] != INVALID_ITEM_ID)
             continue;
 
-        if(itm_Interacting[i] != INVALID_ITEM_ID)
+        if(itm_Interacting[players[i]] != INVALID_ITEM_ID)
             continue;
 
-        if(IsPlayerInAnyVehicle(i))
+        if(IsPlayerInAnyVehicle(players[i]))
             continue;
 
-        targetid = i;
+        targetid = players[i];
         break;
     }
 
@@ -2206,7 +2206,7 @@ timer _item_giveItem[500](playerid, targetid) {
 
 stock _item_isIdleAnimation(animidx) {
     switch(animidx) {
-        case 320, 471, 1164, 1183, 1188, 1189:
+        case 0, 320, 471, 1164, 1183, 1188, 1189:
             return 1;
     }
 
