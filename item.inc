@@ -1123,16 +1123,16 @@ stock PlayerPickUpItem(playerid, Item:id) {
 
     if((z - itm_Data[id][itm_posZ]) < 0.3) { // If the height between the player and the item is below 0.5 units
         if(itm_TypeData[itm_Data[id][itm_type]][itm_useCarryAnim]) {
-            ApplyAnimation(playerid, "CARRY", "liftup105", 5.0, 0, 0, 0, 0, 400);
+            ApplyAnimation(playerid, "CARRY", "liftup105", 5.0, false, false, false, false, 400);
         } else {
-            ApplyAnimation(playerid, "CASINO", "SLOT_PLYR", 4.0, 0, 0, 0, 0, 0);
+            ApplyAnimation(playerid, "CASINO", "SLOT_PLYR", 4.0, false, false, false, false, 0);
         }
         itm_InteractTimer[playerid] = defer PickUpItemDelay(playerid, _:id, 1);
     } else {
         if(itm_TypeData[itm_Data[id][itm_type]][itm_useCarryAnim]) {
-            ApplyAnimation(playerid, "CARRY", "liftup", 5.0, 0, 0, 0, 0, 400);
+            ApplyAnimation(playerid, "CARRY", "liftup", 5.0, false, false, false, false, 400);
         } else {
-            ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_IN", 5.0, 0, 0, 0, 0, 450);
+            ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_IN", 5.0, false, false, false, false, 450);
         }
         itm_InteractTimer[playerid] = defer PickUpItemDelay(playerid, _:id, 0);
     }
@@ -1153,9 +1153,9 @@ stock PlayerDropItem(playerid) {
     }
 
     if(itm_TypeData[itm_Data[itm_Holding[playerid]][itm_type]][itm_useCarryAnim]) {
-        ApplyAnimation(playerid, "CARRY", "putdwn", 5.0, 0, 0, 0, 0, 0);
+        ApplyAnimation(playerid, "CARRY", "putdwn", 5.0, false, false, false, false, 0);
     } else {
-        ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_IN", 5.0, 1, 0, 0, 0, 450);
+        ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_IN", 5.0, true, false, false, false, 450);
     }
 
     itm_InteractTimer[playerid] = defer DropItemDelay(playerid);
@@ -1206,8 +1206,8 @@ stock PlayerGiveItem(playerid, targetid, call = true) {
     SetPlayerFacingAngle(targetid, angle+180.0);
 
     if(!itm_TypeData[itm_Data[id][itm_type]][itm_useCarryAnim]) {
-        ApplyAnimation(playerid, "CASINO", "SLOT_PLYR", 4.0, 0, 0, 0, 0, 450);
-        ApplyAnimation(targetid, "CASINO", "SLOT_PLYR", 4.0, 0, 0, 0, 0, 450);
+        ApplyAnimation(playerid, "CASINO", "SLOT_PLYR", 4.0, false, false, false, false, 450);
+        ApplyAnimation(targetid, "CASINO", "SLOT_PLYR", 4.0, false, false, false, false, 450);
     } else {
         SetPlayerSpecialAction(targetid, SPECIAL_ACTION_CARRY);
     }
@@ -2087,7 +2087,7 @@ timer _LongPickupItemDelay[500](playerid, id) {
 
 timer PickUpItemDelay[400](playerid, id, animtype) {
     if(animtype == 0) {
-        ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, 0, 0, 0, 0, 0);
+        ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, false, false, false, false, 0);
     }
 
     HideActionText(playerid);
@@ -2139,7 +2139,7 @@ timer DropItemDelay[400](playerid) {
     );
 
     Streamer_Update(playerid);
-    ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, 0, 0, 0, 0, 0);
+    ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, false, false, false, false, 0);
     CallLocalFunction("OnPlayerDroppedItem", "dd", playerid, _:id);
     CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
 
@@ -2212,3 +2212,4 @@ stock _item_isIdleAnimation(animidx) {
 
     return 0;
 }
+
