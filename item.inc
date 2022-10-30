@@ -142,7 +142,7 @@ Item ID handle of the newly created item or INVALID_ITEM_ID If the item index is
 full and no more items can be created.
 */
 
-forward DestroyItem(Item:id, &indexid = -1, &worldindexid = -1);
+forward DestroyItem(Item:id);
 /*
 # Description
 Destroys an item.
@@ -945,7 +945,7 @@ stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
     return id;
 }
 
-stock DestroyItem(Item:id, &indexid = -1, &worldindexid = -1) {
+stock DestroyItem(Item:id) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
@@ -980,8 +980,8 @@ stock DestroyItem(Item:id, &indexid = -1, &worldindexid = -1) {
     itm_Holder[id] = INVALID_PLAYER_ID;
     itm_Interactor[id] = INVALID_PLAYER_ID;
 
-    Iter_SafeRemove(itm_Index, _:id, indexid);
-    Iter_SafeRemove(itm_WorldIndex, _:id, worldindexid);
+    Iter_Remove(itm_Index, _:id);
+    Iter_Remove(itm_WorldIndex, _:id);
 
     CallLocalFunction("OnItemDestroyed", "d", _:id);
 
@@ -1878,7 +1878,7 @@ stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, Item:items
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(playerid) == PLAYER_STATE_SPECTATING) {
-        return Y_HOOKS_CONTINUE_RETURN_1;
+        return 1;
     }
 
     // Pressed the drop key
@@ -1896,7 +1896,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         _item_handleUseKeyUp(playerid);
     }
 
-    return Y_HOOKS_CONTINUE_RETURN_1;
+    return 1;
 }
 
 _item_handleDropKeyDown(playerid) {
@@ -2028,25 +2028,25 @@ _item_onPlayerUseItem(playerid, Item:id) {
 
 hook OnButtonPress(playerid, Button:id) {
     if(itm_Interacting[playerid] != INVALID_ITEM_ID) {
-        return Y_HOOKS_CONTINUE_RETURN_0;
+        return 0;
     }
 
     if(itm_ButtonIndex[id] == INVALID_ITEM_ID) {
-        return Y_HOOKS_CONTINUE_RETURN_0;
+        return 0;
     }
 
     if(!Iter_Contains(itm_Index, _:itm_ButtonIndex[id])) {
-        return Y_HOOKS_CONTINUE_RETURN_0;
+        return 0;
     }
 
     new Item:itemID = itm_ButtonIndex[id];
 
     if(itm_Holder[itemID] != INVALID_PLAYER_ID) {
-        return Y_HOOKS_CONTINUE_RETURN_0;
+        return 0;
     }
 
     if(itm_Interactor[itemID] != INVALID_PLAYER_ID) {
-        return Y_HOOKS_CONTINUE_RETURN_0;
+        return 0;
     }
 
     if(Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
@@ -2055,16 +2055,16 @@ hook OnButtonPress(playerid, Button:id) {
 
     if(itm_TypeData[itm_Data[itemID][itm_type]][itm_longPickup]) {
         _item_doLongPickup(playerid, itemID);
-        return Y_HOOKS_BREAK_RETURN_1;
+        return ~1;
     }
 
     if(CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, _:itemID)) {
-        return Y_HOOKS_BREAK_RETURN_0;
+        return ~0;
     }
 
     PlayerPickUpItem(playerid, itemID);
 
-    return Y_HOOKS_BREAK_RETURN_1;
+    return ~1;
 }
 
 _item_doLongPickup(playerid, Item:id) {
