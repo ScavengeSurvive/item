@@ -91,7 +91,7 @@
 // Functions
 
 
-forward ItemType:DefineItemType(const name[], const uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5);
+forward ItemType:DefineItemType(const name[], const uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5, price = 1);
 /*
 # Description
 Defines a new item type with the specified name and model. Item types are the
@@ -112,13 +112,14 @@ one item definition must exist or CreateItem will have no data to use.
 - longpickup: When true, requires long press to pick up, tap results in using.
 - buttonz: Z offset from the item world position to create item button.
 - maxhitpoints: maximum and default hitpoints for items of this type.
+- price: The price of the item, can be used for shop systems.
 
 # Returns
 Item Type ID handle of the newly defined item type. INVALID_ITEM_TYPE If the
 item type definition index is full and no more item types can be defined.
 */
 
-forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1);
+forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1, price = -1);
 /*
 # Description
 Creates an item in the game world at the specified coordinates with the
@@ -136,6 +137,7 @@ display a 3D text label above the item.
 - virtual: When true, the item doesn't have an in-world existence.
 - uuid: Allows specific UUID to be set instead of generating one.
 - hitpoints: -1 by default, if -1 then item type maxhitpoints value is used.
+- price: -1 by default, if -1 then item type price value is used.
 
 # Returns
 Item ID handle of the newly created item or INVALID_ITEM_ID If the item index is
@@ -151,7 +153,7 @@ Destroys an item.
 Boolean to indicate success or failure.
 */
 
-forward CreateItemInWorld(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1);
+forward CreateItemInWorld(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1, price = -1);
 /*
 # Description
 Adds an existing item to the game world if it was previously removed either by
@@ -243,7 +245,7 @@ The allocated ID of the item or INVALID_ITEM_ID If there are no more free item
 slots or -2 If the specified type is invalid.
 */
 
-forward CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1);
+forward CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1, price = -1);
 /*
 # Description
 Creates an item using an ID allocated from AllocNextItemID. This is the only
@@ -377,6 +379,18 @@ forward GetItemHitPoints(Item:id);
 /*
 # Description
 Returns an item's hitpoint value.
+*/
+
+forward SetItemPrice(Item:id, price);
+/*
+# Description
+Sets an item's price value.
+*/
+
+forward GetItemPrice(Item:id);
+/*
+# Description
+Returns an item's price value.
 */
 
 forward SetItemExtraData(Item:id, data);
@@ -719,6 +733,12 @@ forward OnItemHitPointsUpdate(Item:itemid, oldvalue, newvalue);
 When an item's hitpoints value is changed.
 */
 
+forward OnItemPriceUpdate(Item:itemid, oldvalue, newvalue);
+/*
+# Called
+When an item's price value is changed.
+*/
+
 
 /*==============================================================================
 
@@ -848,7 +868,7 @@ hook OnPlayerDisconnect(playerid, reason) {
 ==============================================================================*/
 
 
-stock ItemType:DefineItemType(const name[], const uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5) {
+stock ItemType:DefineItemType(const name[], const uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5, price = 1) {
     new ItemType:id = ItemType:itm_TypeTotal;
 
     if(id == MAX_ITEM_TYPE) {
@@ -891,13 +911,14 @@ stock ItemType:DefineItemType(const name[], const uname[], model, size, Float:ro
     itm_TypeData[id][itm_attachBone]    = boneid;
     itm_TypeData[id][itm_longPickup]    = longpickup;
     itm_TypeData[id][itm_maxHitPoints]  = maxhitpoints;
+    itm_TypeData[id][itm_price]  = price;
 
     CallLocalFunction("OnItemTypeDefined", "s", uname);
 
     return id;
 }
 
-stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1) {
+stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1, price = -1) {
     new Item:id = Item:Iter_Free(itm_Index);
 
     if(_:id == ITER_NONE) {
@@ -924,6 +945,7 @@ stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
     itm_Data[id][itm_type] = type;
     itm_Data[id][itm_nameEx][0] = EOS;
     itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
+    itm_Data[id][itm_price] = price == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_price] : price;
     itm_TypeCount[type]++;
 
     CallLocalFunction("OnItemCreate", "d", _:id);
@@ -937,7 +959,7 @@ stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
     }
 
     if(!virtual) {
-        CreateItemInWorld(id, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints);
+        CreateItemInWorld(id, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints, price);
     }
 
     CallLocalFunction("OnItemCreated", "d", _:id);
@@ -994,7 +1016,7 @@ stock CreateItemInWorld(
     Item:id,
     Float:x = 0.0, Float:y = 0.0, Float:z = 0.0,
     Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0,
-    world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1
+    world = 0, interior = 0, label = 1, applyrotoffsets = 1,hitpoints = -1, price = -1
 ) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
@@ -1019,6 +1041,7 @@ stock CreateItemInWorld(
     itm_Data[id][itm_world] = world;
     itm_Data[id][itm_interior] = interior;
     itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
+    itm_Data[id][itm_price] = price == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_price] : price;
 
     if(itm_Holder[id] != INVALID_PLAYER_ID) {
         RemovePlayerAttachedObject(itm_Holder[id], ITEM_ATTACH_INDEX);
@@ -1319,7 +1342,7 @@ stock Item:AllocNextItemID(ItemType:type, const uuid[] = "") {
     return id;
 }
 
-stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1) {
+stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1, price = -1) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
@@ -1337,9 +1360,10 @@ stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
     }
 
     itm_Data[id][itm_hitPoints] = hitpoints == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_maxHitPoints] : hitpoints;
+    itm_Data[id][itm_price] = price == -1 ? itm_TypeData[itm_Data[id][itm_type]][itm_price] : price;
 
     if(!virtual) {
-        CreateItemInWorld(id, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints);
+        CreateItemInWorld(id, x, y, z, rx, ry, rz, world, interior, label, applyrotoffsets, hitpoints, price);
     }
 
     CallLocalFunction("OnItemCreated", "d", _:id);
@@ -1560,6 +1584,33 @@ stock GetItemHitPoints(Item:id) {
     }
 
     return itm_Data[id][itm_hitPoints];
+}
+
+// itm_price
+stock SetItemHitPoints(Item:id, price) {
+    if(!Iter_Contains(itm_Index, _:id)) {
+        return 1;
+    }
+
+    if (price < 0) {
+        return 2;
+    }
+
+    new old = itm_Data[id][itm_price];
+
+    itm_Data[id][itm_price] = price;
+
+    CallLocalFunction("OnItemPriceUpdate", "ddd", _:id, old, price);
+
+    return 0;
+}
+
+stock GetItemPrice(Item:id) {
+    if(!Iter_Contains(itm_Index, _:id)) {
+        return 0;
+    }
+
+    return itm_Data[id][itm_price];
 }
 
 // itm_exData
