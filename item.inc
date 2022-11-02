@@ -771,7 +771,8 @@ enum E_ITEM_TYPE_DATA {
     itm_colour,
     itm_attachBone,
     bool:itm_longPickup,
-    itm_maxHitPoints
+    itm_maxHitPoints,
+    itm_price
 }
 
 enum E_ITEM_DATA {
@@ -788,6 +789,7 @@ enum E_ITEM_DATA {
     itm_world,
     itm_interior,
     itm_hitPoints,
+    itm_price,
 
     itm_exData,
     itm_nameEx[MAX_ITEM_TEXT],
@@ -1587,7 +1589,7 @@ stock GetItemHitPoints(Item:id) {
 }
 
 // itm_price
-stock SetItemHitPoints(Item:id, price) {
+stock SetItemPrice(Item:id, price) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
@@ -2263,4 +2265,5 @@ stock _item_isIdleAnimation(animidx) {
 
     return 0;
 }
+
 
