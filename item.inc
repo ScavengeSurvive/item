@@ -504,10 +504,23 @@ forward GetItemTypeBone(ItemType:itemtype);
 Returns the bone that an item type will attach the mesh to.
 */
 
+
 forward bool:IsItemTypeLongPickup(ItemType:itemtype);
 /*
 # Description
 Returns true if the item requires holding the pick-up key in order to pick up.
+*/
+
+forward GetItemTypeMaxHitPoints(ItemType:itemtype);
+/*
+# Description
+Returns the max hit points of an item type.
+*/
+
+forward GetItemTypePrice(ItemType:itemtype);
+/*
+# Description
+Returns the price of an item type.
 */
 
 forward bool:IsItemDestroying(Item:id);
@@ -1796,6 +1809,15 @@ stock GetItemTypeMaxHitPoints(ItemType:itemtype) {
     }
 
     return itm_TypeData[itemtype][itm_maxHitPoints];
+}
+
+// itm_price
+stock GetItemTypePrice(ItemType:itemtype) {
+    if(!IsValidItemType(itemtype)) {
+        return 0;
+    }
+
+    return itm_TypeData[itemtype][itm_price];
 }
 
 // itm_Destroying
