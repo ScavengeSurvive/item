@@ -504,7 +504,6 @@ forward GetItemTypeBone(ItemType:itemtype);
 Returns the bone that an item type will attach the mesh to.
 */
 
-
 forward bool:IsItemTypeLongPickup(ItemType:itemtype);
 /*
 # Description
