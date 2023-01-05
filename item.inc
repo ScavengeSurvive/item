@@ -77,6 +77,21 @@
     #define ITEM_GAMETEXT_DROP_ITEM "~k~~CONVERSATION_NO~"
 #endif
 
+// Text symbol for the dialog title when there are multiple items to pick up
+#if !defined ITEM_DIALOGTEXT_TITLE
+    #define ITEM_DIALOGTEXT_TITLE "Multiple items nearby"
+#endif
+
+// Text symbol for the dialog button 1 when there are multiple items to pick up
+#if !defined ITEM_DIALOGTEXT_PICKUP_ITEM
+    #define ITEM_DIALOGTEXT_PICKUP_ITEM "Pick up"
+#endif
+
+// Text symbol for the dialog button 2 when there are multiple items to pick up
+#if !defined ITEM_DIALOGTEXT_CANCEL
+    #define ITEM_DIALOGTEXT_CANCEL "Close"
+#endif
+
 
 // Offset from player Z coordinate to floor Z coordinate
 #define ITEM_FLOOR_OFFSET (0.96)
@@ -2145,7 +2160,7 @@ _item_pickupSelectItem(playerid, const Item:list[], size = sizeof(list)) {
 
         PlayerPickUpItem(playerid, itemID);
     }
-    Dialog_ShowCallback(playerid, using inline Response, DIALOG_STYLE_LIST, "Multiple items nearby", itemsNearby, "Pick up", "Close");
+    Dialog_ShowCallback(playerid, using inline Response, DIALOG_STYLE_LIST, ITEM_DIALOGTEXT_TITLE, itemsNearby, ITEM_DIALOGTEXT_PICKUP_ITEM, ITEM_DIALOGTEXT_CANCEL);
 
     return 0;
 }
