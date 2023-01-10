@@ -77,6 +77,21 @@
     #define ITEM_GAMETEXT_DROP_ITEM "~k~~CONVERSATION_NO~"
 #endif
 
+// Text symbol for the dialog title when there are multiple items to pick up
+#if !defined ITEM_DIALOGTEXT_TITLE
+    #define ITEM_DIALOGTEXT_TITLE "Multiple items nearby"
+#endif
+
+// Text symbol for the dialog button 1 when there are multiple items to pick up
+#if !defined ITEM_DIALOGTEXT_PICKUP_ITEM
+    #define ITEM_DIALOGTEXT_PICKUP_ITEM "Pick up"
+#endif
+
+// Text symbol for the dialog button 2 when there are multiple items to pick up
+#if !defined ITEM_DIALOGTEXT_CANCEL
+    #define ITEM_DIALOGTEXT_CANCEL "Close"
+#endif
+
 
 // Offset from player Z coordinate to floor Z coordinate
 #define ITEM_FLOOR_OFFSET (0.96)
@@ -2099,6 +2114,56 @@ _item_onPlayerUseItem(playerid, Item:id) {
     return CallLocalFunction("OnPlayerUseItem", "dd", playerid, _:id);
 }
 
+_item_pickupSelectItem(playerid, const Item:list[], size = sizeof(list)) {
+    new
+        itemsNearby[MAX_ITEM_NAME * BTN_MAX_INRANGE],
+        itemName[MAX_ITEM_NAME],
+        Item:dummyList[BTN_MAX_INRANGE]; // "Any pointers parameters (references, strings, and arrays) to the caller function are not stored in the closure"
+
+    for (new i; i < size; ++i) {
+        GetItemName(list[i], itemName);
+        format(itemsNearby, _, "%s%s\n", itemsNearby, itemName);
+        dummyList[i] = list[i];
+    }
+
+    inline Response(response, listitem, string:inputtext[]) {
+        #pragma unused inputtext
+
+        if (!response) {
+            return 0;
+        }
+
+        new Item:itemID = dummyList[listitem];
+
+        GetItemName(itemID, itemName);
+
+        if (itm_Holder[itemID] != INVALID_PLAYER_ID) {
+            return 0;
+        }
+
+        if (itm_Interactor[itemID] != INVALID_PLAYER_ID) {
+            return 0;
+        }
+
+        if (Iter_Contains(itm_Index, _:itm_Holding[playerid])) {
+            return CallLocalFunction("OnPlayerUseItemWithItem", "ddd", playerid, _:itm_Holding[playerid], _:itemID);
+        }
+
+        if (itm_TypeData[itm_Data[itemID][itm_type]][itm_longPickup]) {
+            _item_doLongPickup(playerid, itemID);
+            return 0;
+        }
+
+        if (CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, _:itemID)) {
+            return 1;
+        }
+
+        PlayerPickUpItem(playerid, itemID);
+    }
+    Dialog_ShowCallback(playerid, using inline Response, DIALOG_STYLE_LIST, ITEM_DIALOGTEXT_TITLE, itemsNearby, ITEM_DIALOGTEXT_PICKUP_ITEM, ITEM_DIALOGTEXT_CANCEL);
+
+    return 0;
+}
 
 hook OnButtonPress(playerid, Button:id) {
     if(itm_Interacting[playerid] != INVALID_ITEM_ID) {
@@ -2113,7 +2178,17 @@ hook OnButtonPress(playerid, Button:id) {
         return 0;
     }
 
-    new Item:itemID = itm_ButtonIndex[id];
+    new
+        itemcount,
+        Item:itemlist[BTN_MAX_INRANGE],
+        Item:itemID = itm_ButtonIndex[id];
+
+    itemcount = GetPlayerNearbyItems(playerid, itemlist);
+
+    if (itemcount > 1) {
+        _item_pickupSelectItem(playerid, itemlist, itemcount);
+        return ~1;
+    }
 
     if(itm_Holder[itemID] != INVALID_PLAYER_ID) {
         return 0;
