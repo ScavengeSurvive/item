@@ -9,11 +9,13 @@
 #endif
 #define _item_included
 
-#include <a_samp>
+#include <open.mp>
 #include <logger>
 #include <errors>
 #include <YSI_Data\y_iterate>
+#include <YSI_Coding\y_inline>
 #include <YSI_Coding\y_timers>
+#include <YSI_Visual\y_dialog>
 #include <streamer>
 #include <uuid>
 #include <button>
@@ -59,7 +61,7 @@
 
 // Key code for interact key
 #if !defined ITEM_KEY_INTERACT
-    #define ITEM_KEY_INTERACT (16)
+    #define ITEM_KEY_INTERACT (KEY_SECONDARY_ATTACK)
 #endif
 
 // Key code for dropping items
@@ -896,6 +898,134 @@ hook OnPlayerDisconnect(playerid, reason) {
 
 ==============================================================================*/
 
+timer _LongPickupItemDelay[500](playerid, id) {
+    if(CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, id)) {
+        return;
+    }
+
+    itm_LongPickupTick[playerid] = 0;
+    itm_Interacting[playerid] = INVALID_ITEM_ID;
+    PlayerPickUpItem(playerid, Item:id);
+}
+
+timer PickUpItemDelay[400](playerid, id, animtype) {
+    if(animtype == 0) {
+        ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, false, false, false, false, 0);
+    }
+
+    HideActionText(playerid);
+    itm_Interacting[playerid] = INVALID_ITEM_ID;
+
+    if(CallLocalFunction("OnPlayerPickedUpItem", "dd", playerid, id)) {
+        return 1;
+    }
+
+    GiveWorldItemToPlayer(playerid, Item:id, 1);
+
+    return 1;
+}
+
+timer DropItemDelay[400](playerid) {
+    new
+        Item:id = itm_Holding[playerid],
+        Float:x,
+        Float:y,
+        Float:z,
+        Float:r;
+
+    if(!Iter_Contains(itm_Index, _:id)) {
+        return 1;
+    }
+
+    RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
+    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+
+    itm_Holding[playerid] = INVALID_ITEM_ID;
+    itm_Interacting[playerid] = INVALID_ITEM_ID;
+    itm_Holder[id] = INVALID_PLAYER_ID;
+    itm_Interactor[id] = INVALID_PLAYER_ID;
+
+    GetPlayerPos(playerid, x, y, z);
+    GetPlayerFacingAngle(playerid, r);
+
+    CreateItemInWorld(
+        id,
+        RandomFloat(x - 0.5, x + 0.5) + (0.5 * floatsin(-r, degrees)),
+        RandomFloat(y - 0.5, x + 0.5) + (0.5 * floatcos(-r, degrees)),
+        z - ITEM_FLOOR_OFFSET,
+        0.0,
+        0.0,
+        r,
+        GetPlayerVirtualWorld(playerid),
+        GetPlayerInterior(playerid),
+        1
+    );
+
+    Streamer_Update(playerid);
+    ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, false, false, false, false, 0);
+    CallLocalFunction("OnPlayerDroppedItem", "dd", playerid, _:id);
+    CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
+
+    return 1;
+}
+
+timer _item_giveItem[500](playerid, targetid) {
+    // In case the giver quits
+    if(!IsPlayerConnected(playerid)) {
+        return;
+    }
+
+    // In case the receiver quits
+    if(!IsPlayerConnected(targetid)) {
+        return;
+    }
+
+    if(Iter_Contains(itm_Index, _:itm_Holding[targetid])) {
+        return;
+    }
+
+    new
+        Item:id,
+        ItemType:type;
+
+    id = itm_Holding[playerid];
+
+    if(id == INVALID_ITEM_ID) {
+        return;
+    }
+
+    type = itm_Data[id][itm_type];
+
+    itm_Holding[playerid] = INVALID_ITEM_ID;
+    itm_Interacting[playerid] = INVALID_ITEM_ID;
+    itm_Interacting[targetid] = INVALID_ITEM_ID;
+    RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
+
+    SetPlayerAttachedObject(
+        targetid,
+        ITEM_ATTACH_INDEX,
+        itm_TypeData[type][itm_model],
+        itm_TypeData[type][itm_attachBone],
+        itm_TypeData[type][itm_attachPosX],
+        itm_TypeData[type][itm_attachPosY],
+        itm_TypeData[type][itm_attachPosZ],
+        itm_TypeData[type][itm_attachRotX],
+        itm_TypeData[type][itm_attachRotY],
+        itm_TypeData[type][itm_attachRotZ],
+        .materialColour1 = itm_TypeData[type][itm_colour],
+        .materialColour2 = itm_TypeData[type][itm_colour]
+    );
+
+    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+
+    itm_Holding[targetid] = id;
+    itm_Holder[id] = targetid;
+
+    CallLocalFunction("OnPlayerGivenItem", "ddd", playerid, targetid, _:id);
+    CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
+
+    return;
+}
 
 stock ItemType:DefineItemType(const name[], const uname[], model, size, Float:rotx = 0.0, Float:roty = 0.0, Float:rotz = 0.0, Float:modelz = 0.0, Float:attx = 0.0, Float:atty = 0.0, Float:attz = 0.0, Float:attrx = 0.0, Float:attry = 0.0, Float:attrz = 0.0, bool:usecarryanim = false, colour = -1, boneid = 6, bool:longpickup = false, Float:buttonz = ITEM_FLOOR_OFFSET, maxhitpoints = 5, price = 1) {
     new ItemType:id = ItemType:itm_TypeTotal;
@@ -1300,7 +1430,7 @@ stock GiveWorldItemToPlayer(playerid, Item:id, call = 1) {
         playerid, ITEM_ATTACH_INDEX, itm_TypeData[type][itm_model], itm_TypeData[type][itm_attachBone],
         itm_TypeData[type][itm_attachPosX], itm_TypeData[type][itm_attachPosY], itm_TypeData[type][itm_attachPosZ],
         itm_TypeData[type][itm_attachRotX], itm_TypeData[type][itm_attachRotY], itm_TypeData[type][itm_attachRotZ],
-        .materialcolor1 = itm_TypeData[type][itm_colour], .materialcolor2 = itm_TypeData[type][itm_colour]);
+        .materialColour1 = itm_TypeData[type][itm_colour], .materialColour2 = itm_TypeData[type][itm_colour]);
 
     if(itm_TypeData[type][itm_useCarryAnim]) {
         SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
@@ -1965,7 +2095,7 @@ stock GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, Item:items
 ==============================================================================*/
 
 
-hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
+hook OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys) {
     if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(playerid) == PLAYER_STATE_SPECTATING) {
         return 1;
     }
@@ -2222,135 +2352,6 @@ _item_doLongPickup(playerid, Item:id) {
 
     stop itm_LongPickupTimer[playerid];
     itm_LongPickupTimer[playerid] = defer _LongPickupItemDelay(playerid, _:id);
-}
-
-timer _LongPickupItemDelay[500](playerid, id) {
-    if(CallLocalFunction("OnPlayerPickUpItem", "dd", playerid, id)) {
-        return;
-    }
-
-    itm_LongPickupTick[playerid] = 0;
-    itm_Interacting[playerid] = INVALID_ITEM_ID;
-    PlayerPickUpItem(playerid, Item:id);
-}
-
-timer PickUpItemDelay[400](playerid, id, animtype) {
-    if(animtype == 0) {
-        ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, false, false, false, false, 0);
-    }
-
-    HideActionText(playerid);
-    itm_Interacting[playerid] = INVALID_ITEM_ID;
-
-    if(CallLocalFunction("OnPlayerPickedUpItem", "dd", playerid, id)) {
-        return 1;
-    }
-
-    GiveWorldItemToPlayer(playerid, Item:id, 1);
-
-    return 1;
-}
-
-timer DropItemDelay[400](playerid) {
-    new
-        Item:id = itm_Holding[playerid],
-        Float:x,
-        Float:y,
-        Float:z,
-        Float:r;
-
-    if(!Iter_Contains(itm_Index, _:id)) {
-        return 1;
-    }
-
-    RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
-    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
-
-    itm_Holding[playerid] = INVALID_ITEM_ID;
-    itm_Interacting[playerid] = INVALID_ITEM_ID;
-    itm_Holder[id] = INVALID_PLAYER_ID;
-    itm_Interactor[id] = INVALID_PLAYER_ID;
-
-    GetPlayerPos(playerid, x, y, z);
-    GetPlayerFacingAngle(playerid, r);
-
-    CreateItemInWorld(
-        id,
-        x + (0.5 * floatsin(-r, degrees)),
-        y + (0.5 * floatcos(-r, degrees)),
-        z - ITEM_FLOOR_OFFSET,
-        0.0,
-        0.0,
-        r,
-        GetPlayerVirtualWorld(playerid),
-        GetPlayerInterior(playerid),
-        1
-    );
-
-    Streamer_Update(playerid);
-    ApplyAnimation(playerid, "BOMBER", "BOM_PLANT_2IDLE", 4.0, false, false, false, false, 0);
-    CallLocalFunction("OnPlayerDroppedItem", "dd", playerid, _:id);
-    CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
-
-    return 1;
-}
-
-timer _item_giveItem[500](playerid, targetid) {
-    // In case the giver quits
-    if(!IsPlayerConnected(playerid)) {
-        return;
-    }
-
-    // In case the receiver quits
-    if(!IsPlayerConnected(targetid)) {
-        return;
-    }
-
-    if(Iter_Contains(itm_Index, _:itm_Holding[targetid])) {
-        return;
-    }
-
-    new
-        Item:id,
-        ItemType:type;
-
-    id = itm_Holding[playerid];
-
-    if(id == INVALID_ITEM_ID) {
-        return;
-    }
-
-    type = itm_Data[id][itm_type];
-
-    itm_Holding[playerid] = INVALID_ITEM_ID;
-    itm_Interacting[playerid] = INVALID_ITEM_ID;
-    itm_Interacting[targetid] = INVALID_ITEM_ID;
-    RemovePlayerAttachedObject(playerid, ITEM_ATTACH_INDEX);
-
-    SetPlayerAttachedObject(
-        targetid,
-        ITEM_ATTACH_INDEX,
-        itm_TypeData[type][itm_model],
-        itm_TypeData[type][itm_attachBone],
-        itm_TypeData[type][itm_attachPosX],
-        itm_TypeData[type][itm_attachPosY],
-        itm_TypeData[type][itm_attachPosZ],
-        itm_TypeData[type][itm_attachRotX],
-        itm_TypeData[type][itm_attachRotY],
-        itm_TypeData[type][itm_attachRotZ],
-        .materialcolor1 = itm_TypeData[type][itm_colour],
-        .materialcolor2 = itm_TypeData[type][itm_colour]
-    );
-
-    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
-
-    itm_Holding[targetid] = id;
-    itm_Holder[id] = targetid;
-
-    CallLocalFunction("OnPlayerGivenItem", "ddd", playerid, targetid, _:id);
-    CallLocalFunction("OnItemRemovedFromPlayer", "dd", playerid, _:id);
-
-    return;
 }
 
 stock _item_isIdleAnimation(animidx) {

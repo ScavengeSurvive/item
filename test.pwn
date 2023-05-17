@@ -1,6 +1,6 @@
 #include "item.inc"
 
-#include <YSI\y_testing>
+#include <YSI_Core\y_testing>
 #include <test-boilerplate>
 #include <zcmd>
 
@@ -61,25 +61,25 @@ stock dumpItemInfo(Item:itemid) {
 	new interior;GetItemInterior(itemid, interior);
 	new hitPoints = GetItemHitPoints(itemid);
 
-	log("item basic info",
-		_i("objectID", objectID),
-		_i("buttonID", _:buttonID),
-		_i("type", type),
-		_i("world", world),
-		_i("interior", interior),
-		_i("hitPoints", hitPoints));
+	Logger_Log("item basic info",
+		Logger_I("objectID", objectID),
+		Logger_I("buttonID", _:buttonID),
+		Logger_I("type", type),
+		Logger_I("world", world),
+		Logger_I("interior", interior),
+		Logger_I("hitPoints", hitPoints));
 
-	log("item positional info",
-		_f("x", x),
-		_f("y", y),
-		_f("z", z),
-		_f("rx", rx),
-		_f("ry", ry),
-		_f("rz", rz));
+	Logger_Log("item positional info",
+		Logger_F("x", x),
+		Logger_F("y", y),
+		Logger_F("z", z),
+		Logger_F("rx", rx),
+		Logger_F("ry", ry),
+		Logger_F("rz", rz));
 
-	log("item additional",
-		_i("data", data),
-		_s("nameExtra", nameExtra));
+	Logger_Log("item additional",
+		Logger_I("data", data),
+		Logger_S("nameExtra", nameExtra));
 }
 
 new ItemType:item_Medkit;
@@ -120,27 +120,27 @@ CMD:ci(playerid, params[]) {
 
 CMD:gwitp(playerid, params[]) {
 	lastItem = CreateItem(item_Medkit);
-	log("CreateItem",
-		_i("ret", _:lastItem));
+	Logger_Log("CreateItem",
+		Logger_I("ret", _:lastItem));
 
 	new ret = GiveWorldItemToPlayer(playerid, lastItem);
-	log("GiveWorldItemToPlayer",
-		_i("ret", ret));
+	Logger_Log("GiveWorldItemToPlayer",
+		Logger_I("ret", ret));
 
 	return 1;
 }
 
 CMD:rci(playerid, params[]) {
 	new Item:ret = RemoveCurrentItem(playerid);
-	log("RemoveCurrentItem",
-		_i("ret", _:ret));
+	Logger_Log("RemoveCurrentItem",
+		Logger_I("ret", _:ret));
 	return 1;
 }
 
 CMD:rifw(playerid, params[]) {
 	new ret = RemoveItemFromWorld(lastItem);
-	log("RemoveItemFromWorld",
-		_i("ret", ret));
+	Logger_Log("RemoveItemFromWorld",
+		Logger_I("ret", ret));
 	return 1;
 }
 
@@ -200,126 +200,126 @@ CMD:rifw(playerid, params[]) {
 // GetItemsInRange(Float:x, Float:y, Float:z, Float:range = 300.0, items[], maxitems = sizeof(items));
 
 public OnItemTypeDefined(uname[]) {
-	log("OnItemTypeDefined(uname[])",
-		_s("uname", uname));
+	Logger_Log("OnItemTypeDefined(uname[])",
+		Logger_S("uname", uname));
 }
 
 public OnItemCreate(Item:itemid) {
-	log("OnItemCreate(itemid)",
-		_i("itemid", _:itemid));
+	Logger_Log("OnItemCreate(itemid)",
+		Logger_I("itemid", _:itemid));
 }
 
 public OnItemCreated(Item:itemid) {
-	log("OnItemCreated(itemid)",
-		_i("itemid", _:itemid));
+	Logger_Log("OnItemCreated(itemid)",
+		Logger_I("itemid", _:itemid));
 }
 
 public OnItemDestroy(Item:itemid) {
-	log("OnItemDestroy(itemid)",
-		_i("itemid", _:itemid));
+	Logger_Log("OnItemDestroy(itemid)",
+		Logger_I("itemid", _:itemid));
 }
 
 public OnItemDestroyed(Item:itemid) {
-	log("OnItemDestroyed(itemid)",
-		_i("itemid", _:itemid));
+	Logger_Log("OnItemDestroyed(itemid)",
+		Logger_I("itemid", _:itemid));
 }
 
 public OnItemCreateInWorld(Item:itemid) {
-	log("OnItemCreateInWorld(itemid)",
-		_i("itemid", _:itemid));
+	Logger_Log("OnItemCreateInWorld(itemid)",
+		Logger_I("itemid", _:itemid));
 }
 
 public OnItemRemoveFromWorld(Item:itemid) {
-	log("OnItemRemoveFromWorld(itemid)",
-		_i("itemid", _:itemid));
+	Logger_Log("OnItemRemoveFromWorld(itemid)",
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerUseItem(playerid, Item:itemid) {
-	log("OnPlayerUseItem(playerid, itemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerUseItem(playerid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerUseItemWithItem(playerid, Item:itemid, Item:withitemid) {
-	log("OnPlayerUseItemWithItem(playerid, itemid, withitemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid),
-		_i("withitemid", _:withitemid));
+	Logger_Log("OnPlayerUseItemWithItem(playerid, itemid, withitemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid),
+		Logger_I("withitemid", _:withitemid));
 }
 
 public OnPlayerUseItemWithButton(playerid, Button:buttonid, Item:itemid) {
-	log("OnPlayerUseItemWithButton(playerid, buttonid, itemid)",
-		_i("playerid", playerid),
-		_i("buttonid", _:buttonid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerUseItemWithButton(playerid, buttonid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("buttonid", _:buttonid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerRelButtonWithItem(playerid, Button:buttonid, Item:itemid) {
-	log("OnPlayerRelButtonWithItem(playerid, buttonid, itemid)",
-		_i("playerid", playerid),
-		_i("buttonid", _:buttonid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerRelButtonWithItem(playerid, buttonid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("buttonid", _:buttonid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerPickUpItem(playerid, Item:itemid) {
-	log("OnPlayerPickUpItem(playerid, itemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerPickUpItem(playerid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerPickedUpItem(playerid, Item:itemid) {
-	log("OnPlayerPickedUpItem(playerid, itemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerPickedUpItem(playerid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerGetItem(playerid, Item:itemid) {
-	log("OnPlayerGetItem(playerid, itemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerGetItem(playerid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerDropItem(playerid, Item:itemid) {
-	log("OnPlayerDropItem(playerid, itemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerDropItem(playerid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerDroppedItem(playerid, Item:itemid) {
-	log("OnPlayerDroppedItem(playerid, itemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerDroppedItem(playerid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerGiveItem(playerid, targetid, Item:itemid) {
-	log("OnPlayerGiveItem(playerid, targetid, itemid)",
-		_i("playerid", playerid),
-		_i("targetid", targetid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerGiveItem(playerid, targetid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("targetid", targetid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnPlayerGivenItem(playerid, targetid, Item:itemid) {
-	log("OnPlayerGivenItem(playerid, targetid, itemid)",
-		_i("playerid", playerid),
-		_i("targetid", targetid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnPlayerGivenItem(playerid, targetid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("targetid", targetid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnItemRemovedFromPlayer(playerid, Item:itemid) {
-	log("OnItemRemovedFromPlayer(playerid, itemid)",
-		_i("playerid", playerid),
-		_i("itemid", _:itemid));
+	Logger_Log("OnItemRemovedFromPlayer(playerid, itemid)",
+		Logger_I("playerid", playerid),
+		Logger_I("itemid", _:itemid));
 }
 
 public OnItemNameRender(Item:itemid, ItemType:itemtype) {
-	log("OnItemNameRender(itemid, ItemType:itemtype)",
-		_i("itemid", _:itemid),
-		_i("itemtype", _:itemtype));
+	Logger_Log("OnItemNameRender(itemid, ItemType:itemtype)",
+		Logger_I("itemid", _:itemid),
+		Logger_I("itemtype", _:itemtype));
 }
 
 public OnItemHitPointsUpdate(Item:itemid, oldvalue, newvalue) {
-	log("OnItemHitPointsUpdate(itemid, oldvalue, newvalue)",
-		_i("itemid", _:itemid),
-		_i("oldvalue", oldvalue),
-		_i("newvalue", newvalue));
+	Logger_Log("OnItemHitPointsUpdate(itemid, oldvalue, newvalue)",
+		Logger_I("itemid", _:itemid),
+		Logger_I("oldvalue", oldvalue),
+		Logger_I("newvalue", newvalue));
 }
