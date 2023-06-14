@@ -950,8 +950,8 @@ timer DropItemDelay[400](playerid) {
 
     CreateItemInWorld(
         id,
-        RandomFloat(x - 0.5, x + 0.5) + (0.5 * floatsin(-r, degrees)),
-        RandomFloat(y - 0.5, x + 0.5) + (0.5 * floatcos(-r, degrees)),
+        (x + RandomFloat(-0.5, 0.5)) + (0.5 * floatsin(-r, degrees)),
+        (y + RandomFloat(-0.5, 0.5)) + (0.5 * floatcos(-r, degrees)),
         z - ITEM_FLOOR_OFFSET,
         0.0,
         0.0,
