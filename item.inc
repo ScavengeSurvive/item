@@ -2246,8 +2246,8 @@ _item_onPlayerUseItem(playerid, Item:id) {
 
 _item_pickupSelectItem(playerid, const Item:list[], size = sizeof(list)) {
     new
-        itemsNearby[MAX_ITEM_NAME * BTN_MAX_INRANGE],
-        itemName[MAX_ITEM_NAME],
+        itemsNearby[(MAX_ITEM_NAME + MAX_ITEM_TEXT) * BTN_MAX_INRANGE],
+        itemName[MAX_ITEM_NAME + MAX_ITEM_TEXT],
         Item:dummyList[BTN_MAX_INRANGE]; // "Any pointers parameters (references, strings, and arrays) to the caller function are not stored in the closure"
 
     for (new i; i < size; ++i) {
