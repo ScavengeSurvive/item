@@ -74,6 +74,10 @@
     #define ITEM_GAMETEXT_INTERACT "~k~~VEHICLE_ENTER_EXIT~"
 #endif
 
+#if !defined ITEM_GAMETEXT_PICKUP
+    #define ITEM_GAMETEXT_PIKCUP "Press "ITEM_GAMETEXT_INTERACT" to pick up"
+#endif
+
 // Game text symbol for dropping items
 #if !defined ITEM_GAMETEXT_DROP_ITEM
     #define ITEM_GAMETEXT_DROP_ITEM "~k~~CONVERSATION_NO~"
@@ -1229,7 +1233,7 @@ stock CreateItemInWorld(
             world, interior, .streamdistance = 100.0);
     }
 
-    itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], "Press ~k~~VEHICLE_ENTER_EXIT~ to pick up", world, interior, 1.0, .testlos = false);
+    itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], ITEM_GAMETEXT_PICKUP, world, interior, 1.0, .testlos = false);
 
     if(itm_Data[id][itm_button] == INVALID_BUTTON_ID) {
         Logger_Err("invalid button ID during CreateItemInWorld",
