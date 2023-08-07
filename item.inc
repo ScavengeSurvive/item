@@ -75,7 +75,7 @@
 #endif
 
 #if !defined ITEM_GAMETEXT_PICKUP
-    #define ITEM_GAMETEXT_PIKCUP "Press "ITEM_GAMETEXT_INTERACT" to pick up"
+    #define ITEM_GAMETEXT_PICKUP "Press "ITEM_GAMETEXT_INTERACT" to pick up"
 #endif
 
 // Game text symbol for dropping items
