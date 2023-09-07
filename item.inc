@@ -108,9 +108,6 @@
 // Item type validity check constant
 #define INVALID_ITEM_TYPE (ItemType:-1)
 
-#if !defined STREAMER_TAG_OBJECT
-	#define STREAMER_TAG_OBJECT _
-#endif
 
 // Functions
 
@@ -812,7 +809,7 @@ enum E_ITEM_TYPE_DATA {
 }
 
 enum E_ITEM_DATA {
-    STREAMER_TAG_OBJECT:itm_objId,
+    STREAMER_TAG_OBJECT itm_objId,
     Button:itm_button,
     ItemType:itm_type,
 
@@ -1163,7 +1160,7 @@ stock DestroyItem(Item:id) {
 
     itm_TypeCount[itm_Data[id][itm_type]]--;
 
-    itm_Data[id][itm_objId] = STREAMER_TAG_OBJECT:INVALID_STREAMER_ID;
+    itm_Data[id][itm_objId] = STREAMER_TAG_OBJECT INVALID_STREAMER_ID;
     itm_Data[id][itm_button] = INVALID_BUTTON_ID;
     itm_Holder[id] = INVALID_PLAYER_ID;
     itm_Interactor[id] = INVALID_PLAYER_ID;
@@ -1280,7 +1277,7 @@ stock RemoveItemFromWorld(Item:id) {
     DestroyButton(itm_Data[id][itm_button]);
 
     itm_ButtonIndex[itm_Data[id][itm_button]] = INVALID_ITEM_ID;
-    itm_Data[id][itm_objId] = STREAMER_TAG_OBJECT:INVALID_STREAMER_ID;
+    itm_Data[id][itm_objId] = STREAMER_TAG_OBJECT INVALID_STREAMER_ID;
     itm_Data[id][itm_button] = INVALID_BUTTON_ID;
 
     Iter_Remove(itm_WorldIndex, _:id);
