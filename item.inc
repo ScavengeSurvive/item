@@ -74,6 +74,11 @@
     #define ITEM_GAMETEXT_INTERACT "~k~~VEHICLE_ENTER_EXIT~"
 #endif
 
+// Area size of the button to pick up an item
+#if !defined ITEM_BUTTON_AREASIZE
+    #define ITEM_BUTTON_AREASIZE (1.0)
+#endif
+
 #if !defined ITEM_GAMETEXT_PICKUP
     #define ITEM_GAMETEXT_PICKUP "Press "ITEM_GAMETEXT_INTERACT" to pick up"
 #endif
@@ -1233,7 +1238,7 @@ stock CreateItemInWorld(
             world, interior, .streamdistance = 100.0);
     }
 
-    itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], ITEM_GAMETEXT_PICKUP, world, interior, 1.0, .testlos = false);
+    itm_Data[id][itm_button] = CreateButton(x, y, z + itm_TypeData[itemtype][itm_zButtonOffset], ITEM_GAMETEXT_PICKUP, world, interior, ITEM_BUTTON_AREASIZE, .testlos = false);
 
     if(itm_Data[id][itm_button] == INVALID_BUTTON_ID) {
         Logger_Err("invalid button ID during CreateItemInWorld",
@@ -2369,5 +2374,4 @@ stock _item_isIdleAnimation(animidx) {
 
     return 0;
 }
-
 
