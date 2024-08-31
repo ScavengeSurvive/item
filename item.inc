@@ -9,7 +9,12 @@
 #endif
 #define _item_included
 
-#include <open.mp>
+#tryinclude <open.mp>
+
+#if !defined _INC_open_mp
+    #include <a_samp>
+#endif
+
 #include <logger>
 #include <errors>
 #include <YSI_Data\y_iterate>
@@ -1024,8 +1029,9 @@ timer _item_giveItem[500](playerid, targetid) {
         itm_TypeData[type][itm_attachRotX],
         itm_TypeData[type][itm_attachRotY],
         itm_TypeData[type][itm_attachRotZ],
-        .materialColour1 = itm_TypeData[type][itm_colour],
-        .materialColour2 = itm_TypeData[type][itm_colour]
+        _, _, _,
+        itm_TypeData[type][itm_colour],
+        itm_TypeData[type][itm_colour]
     );
 
     SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
@@ -1442,7 +1448,8 @@ stock GiveWorldItemToPlayer(playerid, Item:id, call = 1) {
         playerid, ITEM_ATTACH_INDEX, itm_TypeData[type][itm_model], itm_TypeData[type][itm_attachBone],
         itm_TypeData[type][itm_attachPosX], itm_TypeData[type][itm_attachPosY], itm_TypeData[type][itm_attachPosZ],
         itm_TypeData[type][itm_attachRotX], itm_TypeData[type][itm_attachRotY], itm_TypeData[type][itm_attachRotZ],
-        .materialColour1 = itm_TypeData[type][itm_colour], .materialColour2 = itm_TypeData[type][itm_colour]);
+        _, _, _,
+        itm_TypeData[type][itm_colour], itm_TypeData[type][itm_colour]);
 
     if(itm_TypeData[type][itm_useCarryAnim]) {
         SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
