@@ -74,6 +74,11 @@
     #define ITEM_KEY_DROP_ITEM (KEY_NO)
 #endif
 
+// Colour for item text labels if the "label" parameter is set.
+#if !defined ITEM_LABEL_COLOUR
+    #define ITEM_LABEL_COLOUR (0xFFFF00FF)
+#endif
+
 // Game text symbol for interact key
 #if !defined ITEM_GAMETEXT_INTERACT
     #define ITEM_GAMETEXT_INTERACT "~k~~VEHICLE_ENTER_EXIT~"
@@ -153,7 +158,7 @@ Item Type ID handle of the newly defined item type. INVALID_ITEM_TYPE If the
 item type definition index is full and no more item types can be defined.
 */
 
-forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1, price = -1);
+forward Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, bool:label = true, bool:applyrotoffsets = true, bool:virtual = false, const uuid[] = "", hitpoints = -1, price = -1);
 /*
 # Description
 Creates an item in the game world at the specified coordinates with the
@@ -187,7 +192,7 @@ Destroys an item.
 Boolean to indicate success or failure.
 */
 
-forward CreateItemInWorld(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, hitpoints = -1, price = -1);
+forward CreateItemInWorld(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, bool:label = true, bool:applyrotoffsets = true, hitpoints = -1, price = -1);
 /*
 # Description
 Adds an existing item to the game world if it was previously removed either by
@@ -279,7 +284,7 @@ The allocated ID of the item or INVALID_ITEM_ID If there are no more free item
 slots or -2 If the specified type is invalid.
 */
 
-forward CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1, price = -1);
+forward CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, bool:label = true, bool:applyrotoffsets = true, bool:virtual = false, hitpoints = -1, price = -1);
 /*
 # Description
 Creates an item using an ID allocated from AllocNextItemID. This is the only
@@ -310,7 +315,7 @@ forward GetItemButtonID(Item:id, &Button:buttonid);
 Returns the button ID of a world item. Cannot be a virtual item.
 */
 
-forward SetItemLabel(Item:id, const text[], colour = 0xFFFF00FF, Float:range = 10.0);
+forward SetItemLabel(Item:id, const text[], colour = ITEM_LABEL_COLOUR, Float:range = 10.0);
 /*
 # Description
 Creates or updates a 3D text label above the item. This is actually the label
@@ -975,7 +980,7 @@ timer DropItemDelay[400](playerid) {
         r,
         GetPlayerVirtualWorld(playerid),
         GetPlayerInterior(playerid),
-        1
+        true
     );
 
     Streamer_Update(playerid);
@@ -1095,7 +1100,7 @@ stock ItemType:DefineItemType(const name[], const uname[], model, size, Float:ro
     return id;
 }
 
-stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, const uuid[] = "", hitpoints = -1, price = -1) {
+stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, bool:label = true, bool:applyrotoffsets = true, bool:virtual = false, const uuid[] = "", hitpoints = -1, price = -1) {
     new Item:id = Item:Iter_Free(itm_Index);
 
     if(_:id == ITER_NONE) {
@@ -1132,7 +1137,7 @@ stock Item:CreateItem(ItemType:type, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0
     }
 
     if(x == 0.0 && y == 0.0 && z == 0.0) {
-        virtual = 1;
+        virtual = true;
     }
 
     if(!virtual) {
@@ -1193,7 +1198,7 @@ stock CreateItemInWorld(
     Item:id,
     Float:x = 0.0, Float:y = 0.0, Float:z = 0.0,
     Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0,
-    world = 0, interior = 0, label = 1, applyrotoffsets = 1,hitpoints = -1, price = -1
+    world = 0, interior = 0, bool:label = true, bool:applyrotoffsets = true, hitpoints = -1, price = -1
 ) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
@@ -1259,7 +1264,7 @@ stock CreateItemInWorld(
     }
 
     if(label) {
-        SetButtonLabel(itm_Data[id][itm_button], itm_TypeData[itemtype][itm_name], .range = 2.0, .testlos = false);
+        SetButtonLabel(itm_Data[id][itm_button], itm_TypeData[itemtype][itm_name], ITEM_LABEL_COLOUR, .range = 2.0, .testlos = false);
     }
 
     Iter_Add(itm_WorldIndex, _:id);
@@ -1520,7 +1525,7 @@ stock Item:AllocNextItemID(ItemType:type, const uuid[] = "") {
     return id;
 }
 
-stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, label = 1, applyrotoffsets = 1, virtual = 0, hitpoints = -1, price = -1) {
+stock CreateItem_ExplicitID(Item:id, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:rx = 0.0, Float:ry = 0.0, Float:rz = 0.0, world = 0, interior = 0, bool:label = true, bool:applyrotoffsets = true, bool:virtual = false, hitpoints = -1, price = -1) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
@@ -1585,7 +1590,7 @@ stock GetItemButtonID(Item:id, &Button:buttonid) {
     return 0;
 }
 
-stock SetItemLabel(Item:id, const text[], colour = 0xFFFF00FF, Float:range = 10.0) {
+stock SetItemLabel(Item:id, const text[], colour = ITEM_LABEL_COLOUR, Float:range = 10.0) {
     if(!Iter_Contains(itm_Index, _:id)) {
         return 1;
     }
