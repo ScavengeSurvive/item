@@ -11,7 +11,7 @@
 		"samp-incognito/samp-streamer-plugin:v2.9.6",
 		"Southclaws/pawn-uuid:1.0.1",
 		"Southclaws/pawn-errors:1.2.1",
-		"pawnkit/button@samp-compat",
+		"pawnkit/button:1.8.4",
 		"ScavengeSurvive/mathutil:1.0.0",
 		"ScavengeSurvive/tick-difference:1.0.0",
 		"ScavengeSurvive/action-text:1.0.1",
