@@ -4,30 +4,34 @@
 	"entry": "test.pwn",
 	"output": "test.amx",
 	"dependencies": [
-		"sampctl/samp-stdlib",
-		"Southclaws/samp-logger",
-		"pawn-lang/YSI-Includes",
+		"sampctl/samp-stdlib:0.3.7-R2-2-1",
+		"Southclaws/samp-logger:1.5.0",
+		"Zeex/amx_assembly:v1.0",
+		"pawn-lang/YSI-Includes:v4.0.2",
+		"samp-incognito/samp-streamer-plugin:v2.9.6",
 		"Southclaws/pawn-uuid:1.0.1",
-		"Southclaws/pawn-errors",
-		"ScavengeSurvive/button",
-		"ScavengeSurvive/mathutil",
-		"ScavengeSurvive/tick-difference",
-		"ScavengeSurvive/action-text",
-		"ScavengeSurvive/personal-space"
+		"Southclaws/pawn-errors:1.2.1",
+		"pawnkit/button@samp-compat",
+		"ScavengeSurvive/mathutil:1.0.0",
+		"ScavengeSurvive/tick-difference:1.0.0",
+		"ScavengeSurvive/action-text:1.0.1",
+		"ScavengeSurvive/personal-space:0.1.0"
 	],
 	"dev_dependencies": [
-		"ScavengeSurvive/test-boilerplate",
+		"ScavengeSurvive/test-boilerplate:1.1.0",
 		"Southclaws/zcmd"
 	],
 	"builds": [
 		{
 			"name": "unit",
+			"args": ["-d3", "-;+", "-(+", "-\\+", "-Z+", "-pitem-samp-prefix"],
 			"constants": {
 				"RUN_TESTS": ""
 			}
 		},
 		{
-			"name": "demo"
+			"name": "demo",
+			"args": ["-d3", "-;+", "-(+", "-\\+", "-Z+", "-pitem-samp-prefix"]
 		}
 	],
 	"runtime": {
