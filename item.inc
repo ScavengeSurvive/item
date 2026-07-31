@@ -1285,7 +1285,7 @@ stock GiveWorldItemToPlayer(playerid, Item:id, call = 1) {
         playerid, ITEM_ATTACH_INDEX, itm_TypeData[type][itm_model], itm_TypeData[type][itm_attachBone],
         itm_TypeData[type][itm_attachPosX], itm_TypeData[type][itm_attachPosY], itm_TypeData[type][itm_attachPosZ],
         itm_TypeData[type][itm_attachRotX], itm_TypeData[type][itm_attachRotY], itm_TypeData[type][itm_attachRotZ],
-        .materialcolor1 = itm_TypeData[type][itm_colour], .materialcolor2 = itm_TypeData[type][itm_colour]);
+        1.0, 1.0, 1.0, itm_TypeData[type][itm_colour], itm_TypeData[type][itm_colour]);
 
     if(itm_TypeData[type][itm_useCarryAnim]) {
         SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
@@ -2286,5 +2286,3 @@ stock _item_isIdleAnimation(animidx) {
 
     return 0;
 }
-
-
