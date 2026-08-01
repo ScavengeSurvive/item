@@ -25,6 +25,11 @@
 	"builds": [
 		{
 			"name": "unit",
+			"compiler": {
+				"user": "pawn-lang",
+				"repo": "compiler",
+				"version": "3.10.10"
+			},
 			"args": ["-d3", "-;+", "-(+", "-\\+", "-Z+"],
 			"constants": {
 				"AMX_OLD_CALL": "",
@@ -33,6 +38,11 @@
 		},
 		{
 			"name": "demo",
+			"compiler": {
+				"user": "pawn-lang",
+				"repo": "compiler",
+				"version": "3.10.10"
+			},
 			"args": ["-d3", "-;+", "-(+", "-\\+", "-Z+"],
 			"constants": {
 				"AMX_OLD_CALL": ""
