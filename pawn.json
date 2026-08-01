@@ -1,6 +1,7 @@
 {
 	"user": "ScavengeSurvive",
 	"repo": "item",
+	"preset": "samp",
 	"entry": "test.pwn",
 	"output": "test.amx",
 	"dependencies": [
@@ -43,5 +44,21 @@
 		"mode": "y_testing",
 		"rcon_password": "password",
 		"port": 7777
+	},
+	"pawnkit": {
+		"schemaVersion": 1,
+		"dependencyOverrides": {
+			"Misiur/YSI-Includes": "pawn-lang/YSI-Includes:v5.05.0301",
+			"pawn-lang/YSI-Includes": "pawn-lang/YSI-Includes:v5.05.0301",
+			"BigETI/pawn-memory": "BigETI/pawn-memory:2.0.1",
+			"ScavengeSurvive/mathutil": "ScavengeSurvive/mathutil#c7da0b5e056ef08456e8b0521164a6e2eac963c7",
+			"ScavengeSurvive/tick-difference": "ScavengeSurvive/tick-difference:1.0.0",
+			"ScavengeSurvive/personal-space": "ScavengeSurvive/personal-space#259b53f247bd56ea8f6cf321bdbfa06d70b3d8e8",
+			"Zeex/amx_assembly": "Zeex/amx_assembly#66ca1f13ffb83923cdba3e6ad2855a516d484ee6",
+			"Zeex/samp-plugin-crashdetect": "AmyrAhmady/samp-plugin-crashdetect@v4.22",
+			"samp-incognito/samp-streamer-plugin": "samp-incognito/samp-streamer-plugin:v2.9.6",
+			"Southclaws/samp-logger": "Southclaws/samp-logger:1.5.0",
+			"Southclaws/pawn-errors": "Southclaws/pawn-errors:1.2.1"
+		}
 	}
 }

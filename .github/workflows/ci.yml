@@ -14,23 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - name: Install sampctl
-        env:
-          SAMPCTL_VERSION: "1.14.1"
-        run: |
-          archive="sampctl_${SAMPCTL_VERSION}_linux_amd64.tar.gz"
-          release="https://github.com/Southclaws/sampctl/releases/download/${SAMPCTL_VERSION}"
-          mkdir -p "$RUNNER_TEMP/sampctl"
-          wget -q "$release/$archive" -O "$RUNNER_TEMP/$archive"
-          wget -q "$release/sampctl_${SAMPCTL_VERSION}_checksums.txt" -O "$RUNNER_TEMP/checksums.txt"
-          (
-            cd "$RUNNER_TEMP"
-            grep " $archive$" checksums.txt | sha256sum --check
-          )
-          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/sampctl"
-          echo "$RUNNER_TEMP/sampctl" >> "$GITHUB_PATH"
+      - uses: pawnkit/pawn-actions/setup@v1.8.25
+        with:
+          version: 1.33.0
+          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.33.0/pawn-linux-amd64.tar.gz
+          sha256: 01feebf5bf0cb89b752f7a4002b132c8efa1c78c3e9ac26319a16f7e5c074db3
 
-      - name: Build tests
+      - name: Install dependencies
         env:
-          SAMPCTL_GITHUB_TOKEN: ${{ github.token }}
-        run: sampctl build --forceEnsure
+          GH_TOKEN: ${{ github.token }}
+        run: pawn install
+
+      - uses: pawnkit/pawn-actions/build@v1.8.25
