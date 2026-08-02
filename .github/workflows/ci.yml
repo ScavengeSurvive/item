@@ -16,9 +16,9 @@ jobs:
 
       - uses: pawnkit/pawn-actions/setup@v1.8.50
         with:
-          version: 1.34.0
-          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.34.0/pawn-linux-amd64.tar.gz
-          sha256: 08832cb8e2cf2ea9a660cf42df4f2db93be160dd2b955a4c44e234b51451f374
+          version: 1.34.15
+          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.34.15/pawn-linux-amd64.tar.gz
+          sha256: d54e187777d05ef00f5252bde995a2c2cde1fd58cb221a7736426f5754ebf8bf
 
       - name: Install dependencies
         env:
