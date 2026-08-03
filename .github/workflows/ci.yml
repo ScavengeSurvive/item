@@ -14,15 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: pawnkit/pawn-actions/setup@v1.8.50
+      - uses: pawnkit/pawn-actions/setup@v1.8.51
         with:
-          version: 1.34.15
-          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.34.15/pawn-linux-amd64.tar.gz
-          sha256: d54e187777d05ef00f5252bde995a2c2cde1fd58cb221a7736426f5754ebf8bf
+          version: 1.34.17
+          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.34.17/pawn-linux-amd64.tar.gz
+          sha256: 9afbc4ac88cb4b059f90d22a82fc01080a54e6b62fd726ed4e14705fe52a3f8a
 
       - name: Install dependencies
         env:
           GH_TOKEN: ${{ github.token }}
         run: pawn install
 
-      - uses: pawnkit/pawn-actions/build@v1.8.50
+      - uses: pawnkit/pawn-actions/build@v1.8.51
