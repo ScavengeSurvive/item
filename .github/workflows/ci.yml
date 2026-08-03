@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: pawnkit/pawn-actions/setup@v1.8.71
+      - uses: pawnkit/pawn-actions/setup@v1.8.72
         with:
           version: 1.34.29
           download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.34.29/pawn-linux-amd64.tar.gz
@@ -25,4 +25,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: pawn install
 
-      - uses: pawnkit/pawn-actions/build@v1.8.71
+      - uses: pawnkit/pawn-actions/build@v1.8.72
